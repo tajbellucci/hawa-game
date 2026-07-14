@@ -118,6 +118,13 @@
   #nameHint { position:absolute; left:50%; top:94%; transform:translateX(-50%);
       font-size:2.8vmin; color:#c98aad; text-align:center; white-space:nowrap;
       opacity:.7; }
+  #shareBtn { position:absolute; left:50%; top:72%; transform:translateX(-50%);
+      display:flex; align-items:center; gap:8px; padding:2.5vmin 5vmin;
+      background:#0077b5; color:#fff; border:none; border-radius:999px;
+      font-size:3.5vmin; font-weight:700; cursor:pointer; z-index:10;
+      box-shadow:0 4px 14px rgba(0,119,181,.4); transition:transform .15s; }
+  #shareBtn:active { transform:translateX(-50%) scale(.93); }
+  #shareBtn svg { width:5vmin; height:5vmin; fill:#fff; }
 
 
   /* ============ FEED SCENE ============ */
@@ -399,6 +406,10 @@
       <circle cx="50" cy="50" r="44" fill="none" stroke="#fff" stroke-width="4" opacity=".6"/>
     </svg>
     <div id="nameHint">Add ?name=YourKid to the URL to personalize!</div>
+    <button id="shareBtn">
+      <svg viewBox="0 0 24 24"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+      Share on LinkedIn
+    </button>
   </div>
 
   <!-- ================= FEED ================= -->
@@ -747,38 +758,47 @@ if(CONFIG.childName){
 /* ================= TRACKER ================= */
 (function(){
   const KEY='bunny_stats';
+  const REMOTE='https://script.google.com/macros/s/AKfycbx_DEV_KEY/exec';
   const stats=JSON.parse(localStorage.getItem(KEY)||'[]');
   const visit={ts:Date.now(),date:new Date().toISOString(),name:CONFIG.childName||'(none)',
     device:navigator.userAgent,screen:innerWidth+'x'+innerHeight,location:'...'};
 
-  if(location.search.includes('stats')){
-    document.body.innerHTML='<div style="padding:20px;font:15px/1.6 sans-serif;background:#0f0f1a;color:#eee;min-height:100vh">'+
-      '<h1 style="color:#f78fb0;border-bottom:2px solid #f78fb0;padding-bottom:8px">Bunny Game Stats</h1>'+
-      '<p style="color:#aaa">Loading location...</p></div>';
-    const container=document.body.firstChild;
-    Promise.any([
+  function getLocation(){
+    return Promise.any([
       fetch('https://ipapi.co/json/').then(r=>r.json()),
       fetch('https://ipwho.is/').then(r=>r.json()),
       fetch('https://freeipapi.com/api/json').then(r=>r.json())
-    ]).then(loc=>{
-      visit.location=[loc.city,loc.region||loc.region_name,loc.country||loc.country_name].filter(Boolean).join(', ');
+    ]).then(loc=>[loc.city,loc.region||loc.region_name,loc.country||loc.country_name].filter(Boolean).join(', '))
+    .catch(()=>'(unknown)');
+  }
+
+  if(location.search.includes('stats')){
+    document.body.innerHTML='<div style="padding:20px;font:15px/1.6 sans-serif;background:#0f0f1a;color:#eee;min-height:100vh">'+
+      '<h1 style="color:#f78fb0;border-bottom:2px solid #f78fb0;padding-bottom:8px">Bunny Game Stats</h1>'+
+      '<p style="color:#aaa">Loading...</p></div>';
+    const container=document.body.firstChild;
+
+    getLocation().then(loc=>{
+      visit.location=loc;
       stats.push(visit); localStorage.setItem(KEY,JSON.stringify(stats));
-      renderStats(container,stats);
-    }).catch(()=>{
-      visit.location='(unknown)'; stats.push(visit); localStorage.setItem(KEY,JSON.stringify(stats));
-      renderStats(container,stats);
+
+      const allStats=JSON.parse(localStorage.getItem(KEY+'_all')||'[]');
+      allStats.push(visit);
+      localStorage.setItem(KEY+'_all',JSON.stringify(allStats));
+
+      renderStats(container,allStats);
     });
     throw 'stats';
   }
 
-  Promise.any([
-    fetch('https://ipapi.co/json/').then(r=>r.json()),
-    fetch('https://ipwho.is/').then(r=>r.json()),
-    fetch('https://freeipapi.com/api/json').then(r=>r.json())
-  ]).then(loc=>{
-    visit.location=[loc.city,loc.region||loc.region_name,loc.country||loc.country_name].filter(Boolean).join(', ');
-  }).catch(()=>{ visit.location='(unknown)'; })
-    .finally(()=>{ stats.push(visit); localStorage.setItem(KEY,JSON.stringify(stats)); });
+  getLocation().then(loc=>{
+    visit.location=loc;
+    stats.push(visit); localStorage.setItem(KEY,JSON.stringify(stats));
+
+    const allStats=JSON.parse(localStorage.getItem(KEY+'_all')||'[]');
+    allStats.push(visit);
+    localStorage.setItem(KEY+'_all',JSON.stringify(allStats));
+  });
 
   function renderStats(el,arr){
     const names={}; arr.forEach(v=>{ names[v.name]=(names[v.name]||0)+1; });
@@ -986,8 +1006,19 @@ function go(name){
 $$('.navBtn').forEach(b=>b.addEventListener('pointerdown',e=>{ S.click(); go(b.dataset.scene); }));
 
 /* ================= SPLASH ================= */
-$('#splash').addEventListener('pointerdown',()=>{ audio(); S.giggle(); bounce();
-  setTimeout(()=>go('feed'),450); });
+$('#shareBtn').addEventListener('pointerdown',e=>{
+  e.stopPropagation(); audio(); S.chime();
+  const name=CONFIG.childName||'my kid';
+  const msg=`I made a personalized baby game for ${name}! 🐰🌸\n\n`+
+    `She feeds, sings, sleeps, tidies up, and stacks rings — all her favorite habits and play she does offline, now in a cute interactive game.\n\n`+
+    `Each animal sings its own lullaby, and you can personalize it with your child's name!\n\n`+
+    `Try it 👉`;
+  const url='https://tajbellucci.github.io/hawa-game/bunny.html'+(CONFIG.childName?'?name='+encodeURIComponent(CONFIG.childName):'');
+  window.open('https://www.linkedin.com/sharing/share-offsite/?url='+encodeURIComponent(url)+'&summary='+encodeURIComponent(msg),'_blank');
+});
+$('#splash').addEventListener('pointerdown',e=>{
+  if(e.target.closest('#shareBtn')) return;
+  audio(); S.giggle(); bounce(); setTimeout(()=>go('feed'),450); });
 
 /* ================= FEED ================= */
 let fed=0;

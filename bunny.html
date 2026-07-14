@@ -52,8 +52,10 @@
   .bn-blink  .eyesOpen{opacity:0}  .bn-blink .eyesClosed{opacity:1}
 
   /* mouth states */
-  .mSmile,.mOpen,.mYawn { transition:opacity .12s; }
-  .mOpen,.mYawn { opacity:0; }
+  .mSmile,.mOpen,.mYawn,.paci { transition:opacity .12s; }
+  .mOpen,.mYawn,.paci { opacity:0; }
+  .bn-paci .paci { opacity:1; }
+  .bn-paci .mSmile, .bn-paci .mOpen { opacity:0 !important; }
   .bn-eat .mSmile,.bn-sing-m .mSmile{opacity:0} .bn-eat .mOpen,.bn-sing-m .mOpen{opacity:1}
   .bn-yawn .mSmile{opacity:0} .bn-yawn .mYawn{opacity:1}
   .bn-sleep .mSmile{opacity:.55}
@@ -141,7 +143,19 @@
   #lamp { position:absolute; right:5vmin; top:14vmin; width:16vmin; height:24vmin; cursor:pointer; z-index:30; }
   #lampGlow { transition:opacity .8s; }
   body.dark #lampGlow { opacity:0 !important; }
-  #musicBox { position:absolute; left:5vmin; top:16vmin; width:15vmin; height:17vmin; cursor:pointer; z-index:30; }
+  #musicBox { position:absolute; right:6vmin; top:44vmin; width:15vmin; height:17vmin; cursor:pointer; z-index:30; }
+  /* bedtime options tray: every way to make the toy sleep, one big button each */
+  #sleepOpts { position:absolute; left:2.5vmin; top:50%; transform:translateY(-50%);
+      display:flex; flex-direction:column; gap:2.2vmin; z-index:36; }
+  .sopt { width:13vmin; height:13vmin; max-width:88px; max-height:88px; border-radius:50%;
+      border:none; background:#fff; cursor:pointer; padding:2.4vmin;
+      box-shadow:0 4px 0 rgba(90,70,160,.15); transition:transform .15s, box-shadow .3s; }
+  .sopt:active { transform:scale(.86); }
+  .sopt.on { background:#fff3fa;
+      box-shadow:0 0 0 .9vmin rgba(255,255,255,.75), 0 4px 12px rgba(90,70,160,.35); }
+  .sopt svg { width:100%; height:100%; display:block; }
+  body.s-sleep.dark .sopt { background:#efe6ff; }
+  body.s-sleep.dark .sopt.on { background:#fff; }
   #musicBox.spinning .mbDancer { animation:mbSpin 2.4s linear infinite; transform-origin:50px 34px; }
   @keyframes mbSpin { from{transform:rotate(0)} to{transform:rotate(360deg)} }
   #sunBtn { position:absolute; left:50%; top:9vmin; transform:translateX(-50%) scale(0);
@@ -247,29 +261,6 @@
   .cloud { position:absolute; opacity:.8; pointer-events:none; z-index:2; }
   .cloud svg { width:100%; height:100%; }
 
-  /* ============ HAWA CHARACTER (the player) ============ */
-  #hawaChar { position:absolute; width:22vmin; height:29.7vmin; z-index:18; pointer-events:none;
-      transform:translate(-50%,-50%); transition:left .8s cubic-bezier(.45,.05,.35,1.2), top .8s cubic-bezier(.45,.05,.35,1.2); }
-  #hawaChar svg { width:100%; height:100%; display:block; overflow:visible; }
-  body.s-splash #hawaChar { left:78%; top:62%; }
-  body.s-feed   #hawaChar { left:13%; top:60%; }
-  body.s-sleep  #hawaChar { left:15%; top:66%; }
-  body.s-sing   #hawaChar { left:24%; top:60%; }
-  body.s-tidy   #hawaChar { left:38%; top:66%; }
-  body.s-stack  #hawaChar { left:13%; top:62%; }
-  #hcAll { animation:hcBob 3.2s ease-in-out infinite; transform-origin:100px 250px; }
-  @keyframes hcBob { 0%,100%{transform:scale(1,1)} 50%{transform:scale(1.02,.98)} }
-  .hcArmL { transform-origin:64px 152px; transition:transform .35s cubic-bezier(.5,-.3,.5,1.3); }
-  .hcArmR { transform-origin:136px 152px; transition:transform .35s cubic-bezier(.5,-.3,.5,1.3); }
-  #hawaChar.cheer { animation:hcJump .55s ease-in-out 3; }
-  #hawaChar.cheer .hcArmL { transform:rotate(145deg); }
-  #hawaChar.cheer .hcArmR { transform:rotate(-145deg); }
-  #hawaChar.hop { animation:hcJump .45s ease-in-out 1; }
-  @keyframes hcJump { 0%,100%{transform:translate(-50%,-50%)} 50%{transform:translate(-50%,-50%) translateY(-4vmin)} }
-  body.s-splash #hawaChar .hcArmR { animation:hcWave 1.1s ease-in-out infinite; }
-  @keyframes hcWave { 0%,100%{transform:rotate(-160deg)} 50%{transform:rotate(-120deg)} }
-  body.s-sing #hawaChar svg { animation:friendSway 1.1s ease-in-out infinite; transform-origin:50% 92%; }
-  body.s-sleep.asleep #hawaChar .hcMouthOpen { opacity:0; }
 </style>
 </head>
 <body class="s-splash">
@@ -382,13 +373,18 @@
           <ellipse cx="200" cy="328" rx="22" ry="24" fill="#93293c"/>
           <ellipse cx="200" cy="340" rx="13" ry="10" fill="#f2778c"/>
         </g>
+        <g class="paci">
+          <ellipse cx="200" cy="318" rx="25" ry="17" fill="#f48fb1"/>
+          <ellipse cx="200" cy="316" rx="10" ry="7" fill="#fff" opacity=".85"/>
+          <circle cx="200" cy="338" r="9" fill="none" stroke="#ec7fa9" stroke-width="5.5"/>
+        </g>
       </g>
     </svg>
   </div>
 
   <!-- ================= SPLASH ================= -->
   <div class="scene active" id="splash">
-    <div class="bigTitle">🌸 Hawa's Bunny 🌸</div>
+    <div class="bigTitle" id="gameTitle">🌸 Hawa's Bunny 🌸</div>
     <svg class="tapHint" viewBox="0 0 100 100">
       <circle cx="50" cy="50" r="30" fill="#fff" opacity=".85"/>
       <circle cx="50" cy="50" r="18" fill="#f78fb0"/>
@@ -476,6 +472,42 @@
         <path d="M50 36 L38 52 L62 52 z" fill="#f48fb1"/>
       </g>
     </svg>
+    <div id="sleepOpts">
+      <button class="sopt" id="sopt-blanket" aria-label="Blanket">
+        <svg viewBox="0 0 100 100">
+          <path d="M14 34 Q50 22 86 34 L86 74 Q50 86 14 74 z" fill="#a5d8f3"/>
+          <path d="M14 34 Q50 22 86 34 L86 46 Q50 34 14 46 z" fill="#fdf6ec"/>
+          <circle cx="35" cy="60" r="5" fill="#f6c1d9"/><circle cx="55" cy="56" r="5" fill="#f6c1d9"/><circle cx="70" cy="64" r="5" fill="#f6c1d9"/>
+        </svg>
+      </button>
+      <button class="sopt" id="sopt-lamp" aria-label="Lamp">
+        <svg viewBox="0 0 100 100">
+          <path d="M30 46 L50 12 L70 46 z" fill="#ffb74d"/>
+          <rect x="46" y="46" width="8" height="30" rx="4" fill="#8d6e63"/>
+          <ellipse cx="50" cy="82" rx="20" ry="8" fill="#795548"/>
+        </svg>
+      </button>
+      <button class="sopt" id="sopt-lullaby" aria-label="Lullaby">
+        <svg viewBox="0 0 100 100">
+          <path d="M38 70 V26 l32-7 v42" stroke="#ba68c8" stroke-width="7" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+          <ellipse cx="30" cy="71" rx="10" ry="7.5" fill="#ba68c8"/>
+          <ellipse cx="62" cy="63" rx="10" ry="7.5" fill="#ba68c8"/>
+        </svg>
+      </button>
+      <button class="sopt" id="sopt-paci" aria-label="Pacifier">
+        <svg viewBox="0 0 100 100">
+          <ellipse cx="50" cy="42" rx="30" ry="20" fill="#f48fb1"/>
+          <ellipse cx="50" cy="38" rx="12" ry="8" fill="#fff" opacity=".85"/>
+          <circle cx="50" cy="68" r="12" fill="none" stroke="#ec7fa9" stroke-width="7"/>
+        </svg>
+      </button>
+      <button class="sopt" id="sopt-kiss" aria-label="Goodnight kiss">
+        <svg viewBox="0 0 100 100">
+          <path d="M50 84 C22 64 14 44 26 32 c10-10 24-2 24 8 c0-10 14-18 24-8 c12 12 4 32-24 52z" fill="#f2557a"/>
+          <path d="M62 20 l3 7 7 3 -7 3 -3 7 -3-7 -7-3 7-3 z" fill="#ffd54f"/>
+        </svg>
+      </button>
+    </div>
     <svg id="sunBtn" viewBox="0 0 100 100">
       <circle cx="50" cy="50" r="26" fill="#ffd54f"/>
       <g stroke="#ffb300" stroke-width="6" stroke-linecap="round">
@@ -586,64 +618,6 @@
     </button>
   </div>
 
-  <!-- ================= HAWA CHARACTER (the player) ================= -->
-  <div id="hawaChar" aria-hidden="true">
-    <svg viewBox="0 0 200 270" xmlns="http://www.w3.org/2000/svg">
-      <defs>
-        <radialGradient id="gSkin" cx="42%" cy="34%" r="80%">
-          <stop offset="0%" stop-color="#f6d5b4"/><stop offset="100%" stop-color="#ecc09a"/>
-        </radialGradient>
-        <linearGradient id="gDress" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stop-color="#8e3069"/><stop offset="100%" stop-color="#6d1f4f"/>
-        </linearGradient>
-      </defs>
-      <g id="hcAll">
-        <!-- legs + shoes -->
-        <rect x="80" y="200" width="15" height="38" rx="7.5" fill="url(#gSkin)"/>
-        <rect x="106" y="200" width="15" height="38" rx="7.5" fill="url(#gSkin)"/>
-        <ellipse cx="86" cy="243" rx="17" ry="9" fill="#c2477e"/>
-        <ellipse cx="115" cy="243" rx="17" ry="9" fill="#c2477e"/>
-        <!-- arms -->
-        <g class="hcArmL">
-          <ellipse cx="58" cy="172" rx="11" ry="27" fill="url(#gSkin)" transform="rotate(16 58 172)"/>
-          <circle cx="51" cy="195" r="9.5" fill="url(#gSkin)"/>
-        </g>
-        <g class="hcArmR">
-          <ellipse cx="142" cy="172" rx="11" ry="27" fill="url(#gSkin)" transform="rotate(-16 142 172)"/>
-          <circle cx="149" cy="195" r="9.5" fill="url(#gSkin)"/>
-        </g>
-        <!-- dress -->
-        <path d="M100 126 L62 206 Q72 216 100 218 Q128 216 138 206 Z" fill="url(#gDress)"/>
-        <path d="M64 202 q9 8 18 4 q9 8 18 5 q9-3 18-5 q9 4 18-4 l3 6 q-10 10 -39 11 q-29-1 -39-11 z" fill="#a13d7a"/>
-        <circle cx="66" cy="150" r="12" fill="#8e3069"/>
-        <circle cx="134" cy="150" r="12" fill="#8e3069"/>
-        <path d="M84 132 L100 148 L116 132" stroke="#5c1a42" stroke-width="3.5" fill="none" stroke-linecap="round"/>
-        <!-- head -->
-        <circle cx="46" cy="92" r="10" fill="url(#gSkin)"/>
-        <circle cx="154" cy="92" r="10" fill="url(#gSkin)"/>
-        <circle cx="45" cy="99" r="3" fill="#f2c14e"/>
-        <circle cx="155" cy="99" r="3" fill="#f2c14e"/>
-        <circle cx="100" cy="82" r="56" fill="url(#gSkin)"/>
-        <!-- short wispy brown hair -->
-        <path d="M46 74 Q46 26 100 24 Q154 26 154 74 Q146 52 128 44 Q134 56 130 62 Q116 42 92 44 Q66 48 54 72 Q48 76 46 74 z" fill="#4e3626"/>
-        <path d="M84 32 q6-10 14-12 M100 30 q4-10 12-12 M70 40 q2-10 10-14" stroke="#4e3626" stroke-width="5" fill="none" stroke-linecap="round"/>
-        <!-- face -->
-        <path d="M66 66 q10-6 20-2 M114 64 q10-4 20 2" stroke="#5a4232" stroke-width="3.5" fill="none" stroke-linecap="round"/>
-        <ellipse cx="78" cy="84" rx="9.5" ry="12" fill="#33221a"/>
-        <ellipse cx="122" cy="84" rx="9.5" ry="12" fill="#33221a"/>
-        <circle cx="75" cy="79" r="3.5" fill="#fff"/>
-        <circle cx="119" cy="79" r="3.5" fill="#fff"/>
-        <ellipse cx="64" cy="104" rx="9" ry="5.5" fill="#f2a0ae" opacity=".5"/>
-        <ellipse cx="136" cy="104" rx="9" ry="5.5" fill="#f2a0ae" opacity=".5"/>
-        <path d="M96 98 q4 4 8 0" stroke="#d19a72" stroke-width="3" fill="none" stroke-linecap="round"/>
-        <g class="hcMouthOpen">
-          <path d="M84 110 Q100 128 116 110 Q100 118 84 110 z" fill="#a63b4e"/>
-          <path d="M87 110 q13 5 26 0 l-1 4 q-12 4 -24 0 z" fill="#fff"/>
-        </g>
-      </g>
-    </svg>
-  </div>
-
   <!-- ================= NAV ================= -->
   <div id="nav">
     <button class="navBtn" data-scene="feed" aria-label="Feed">
@@ -689,7 +663,10 @@
 <script>
 'use strict';
 /* ================= CONFIG ================= */
-const CONFIG = { childName:'Hawa' };
+/* Shareable: any child can play — add ?name=Ayesha to the URL */
+const CONFIG = { childName:(new URLSearchParams(location.search).get('name')||'Hawa').slice(0,20) };
+document.getElementById('gameTitle').textContent='🌸 '+CONFIG.childName+"'s Bunny 🌸";
+document.title=CONFIG.childName+"'s Bunny Baby";
 
 /* ================= AUDIO ENGINE (all synth, offline) ================= */
 let AC=null, master=null;
@@ -802,21 +779,6 @@ function confettiRain(){ for(let i=0;i<3;i++) setTimeout(()=>
 function bunnyCenter(){ const r=bunny.getBoundingClientRect();
   return {x:r.left+r.width/2, y:r.top+r.height/2, mouthX:r.left+r.width/2, mouthY:r.top+r.height*.56}; }
 
-/* Hawa character reactions: she is the player */
-const hawaEl=document.getElementById('hawaChar');
-function hawaCelebrate(){
-  hawaEl.classList.remove('cheer','hop'); void hawaEl.offsetWidth;
-  hawaEl.classList.add('cheer');
-  const r=hawaEl.getBoundingClientRect();
-  burst(r.left+r.width/2, r.top+r.height*.25, {n:8,shape:'heart',spread:16});
-  setTimeout(()=>hawaEl.classList.remove('cheer'),1750);
-}
-function hawaHop(){
-  if(hawaEl.classList.contains('cheer')) return;
-  hawaEl.classList.remove('hop'); void hawaEl.offsetWidth;
-  hawaEl.classList.add('hop');
-  setTimeout(()=>hawaEl.classList.remove('hop'),480);
-}
 
 /* idle blink */
 setInterval(()=>{ if(!bunny.classList.contains('bn-sleep')){
@@ -879,7 +841,7 @@ function feedWith(food){
       if(++bites>=3){ clearInterval(chewTimer); fly.remove();
         S.gulp(); fed++; updateTummy(); cheeksGlow();
         burst(m.mouthX,m.mouthY,{n:6,shape:'heart',spread:12});
-        bunnyClass('bn-happy',800); bounce(); hawaHop();
+        bunnyClass('bn-happy',800); bounce();
         body.classList.remove('feeding');
         if(fed>=4) setTimeout(allDone,700);
       }
@@ -889,7 +851,7 @@ function feedWith(food){
 function allDone(){
   S.burp(); setTimeout(()=>{ S.yay(); say('Yummy! All done!'); },500);
   bunnyClass('bn-happy',3000); bunny.classList.add('bn-dance-move'); bunnyClass('bn-dance',3000);
-  confettiRain(); hawaCelebrate();
+  confettiRain();
   const m=bunnyCenter(); burst(m.x,m.y-vmin(10),{n:14,shape:'heart',spread:26});
   setTimeout(()=>{ bunny.classList.remove('bn-dance-move');
     fed=0; updateTummy(); resetTray();
@@ -912,7 +874,7 @@ bunny.addEventListener('pointerdown',e=>{
       if(++g>=3){ clearInterval(gl);
         setTimeout(()=>{ bunny.classList.remove('bn-drink');
           const milk2=$('.milkLevel'); milk2.setAttribute('height',34); milk2.setAttribute('y',436);
-          bunnyClass('bn-happy',900); bounce(); S.giggle(); hawaHop();
+          bunnyClass('bn-happy',900); bounce(); S.giggle();
           const m=bunnyCenter(); burst(m.x,m.y-vmin(8),{n:8,shape:'heart',spread:16});
           body.classList.remove('feeding');
         },400);
@@ -926,13 +888,22 @@ bunny.addEventListener('pointerdown',e=>{
 /* ================= SLEEP ================= */
 let sleepState, snoreTimer=null, zzzTimer=null;
 inits.sleep=()=>{
-  sleepState={tucked:false,dark:false,asleep:false};
+  sleepState={tucked:false,dark:false,lullaby:false,paci:false,kiss:false,asleep:false};
   body.classList.remove('tucked','dark','asleep');
-  bunny.classList.add('bn-sleepy-sway');
+  bunny.classList.add('bn-sleepy-sway'); bunny.classList.remove('bn-paci');
+  $$('#sleepOpts .sopt').forEach(b=>b.classList.remove('on'));
+  $('#musicBox').classList.remove('spinning');
   scatterStars();
 };
 cleanups.sleep=()=>{ clearInterval(snoreTimer); clearInterval(zzzTimer);
-  body.classList.remove('tucked','dark','asleep'); $$('.nightStar').forEach(s=>s.remove()); };
+  body.classList.remove('tucked','dark','asleep'); bunny.classList.remove('bn-paci');
+  $$('.nightStar').forEach(s=>s.remove());
+  $('#musicBox').classList.remove('spinning'); };
+const comfortCount=()=>['tucked','dark','lullaby','paci','kiss'].filter(k=>sleepState[k]).length;
+function soptSync(){
+  [['blanket','tucked'],['lamp','dark'],['lullaby','lullaby'],['paci','paci'],['kiss','kiss']]
+    .forEach(([id,key])=>$('#sopt-'+id).classList.toggle('on',!!sleepState[key]));
+}
 
 function scatterStars(){
   $$('.nightStar').forEach(s=>s.remove());
@@ -946,29 +917,60 @@ function scatterStars(){
     $('#sleep').appendChild(d);
   });
 }
-$('#blanket').addEventListener('pointerdown',()=>{
+function doBlanket(){
   if(sleepState.asleep) return;
   sleepState.tucked=!sleepState.tucked;
   body.classList.toggle('tucked',sleepState.tucked);
-  S.tap(); if(sleepState.tucked){ S.chime(); checkAsleep(); }
-});
-$('#lamp').addEventListener('pointerdown',()=>{
+  soptSync(); S.tap(); if(sleepState.tucked){ S.chime(); checkAsleep(); }
+}
+function doLamp(){
   if(sleepState.asleep) return;
   sleepState.dark=!sleepState.dark;
   body.classList.toggle('dark',sleepState.dark);
-  S.click(); if(sleepState.dark) checkAsleep();
-});
-$('#musicBox').addEventListener('pointerdown',()=>{
+  soptSync(); S.click(); if(sleepState.dark) checkAsleep();
+}
+function doLullaby(){
+  if(sleepState.asleep) return;
+  sleepState.lullaby=!sleepState.lullaby;
   const mb=$('#musicBox');
-  if(mb.classList.contains('spinning')){ mb.classList.remove('spinning'); stopSong(); }
-  else { mb.classList.add('spinning');
+  if(sleepState.lullaby){ mb.classList.add('spinning');
     playSong(TUNE_LULLABY,{bpm:76,type:'sine',vol:.22,loop:true}); }
-  S.click();
-});
+  else { mb.classList.remove('spinning'); stopSong(); }
+  soptSync(); S.click(); if(sleepState.lullaby) checkAsleep();
+}
+function doPaci(){
+  if(sleepState.asleep) return;
+  sleepState.paci=!sleepState.paci;
+  bunny.classList.toggle('bn-paci',sleepState.paci);
+  soptSync();
+  tone(500,.08,{type:'sine',vol:.3}); tone(380,.1,{type:'sine',vol:.3,at:.12});
+  if(sleepState.paci) checkAsleep();
+}
+function doKiss(){
+  if(sleepState.asleep) return;
+  sleepState.kiss=true; soptSync();
+  tone(900,.14,{type:'sine',vol:.35,slide:400}); S.chime();
+  const b=$('#sopt-kiss').getBoundingClientRect(), m=bunnyCenter();
+  burst(b.left+b.width/2,b.top+b.height/2,{n:3,shape:'heart',spread:8,colors:['#f2557a']});
+  setTimeout(()=>{ burst(m.x,m.y-vmin(6),{n:6,shape:'heart',spread:12,colors:['#f2557a','#f78fb0']});
+    bunnyClass('bn-happy',700);
+    $$('.cheekL,.cheekR').forEach(c=>{ c.style.opacity=.8; setTimeout(()=>c.style.opacity=.35,1200); });
+  },350);
+  checkAsleep();
+}
+$('#sopt-blanket').addEventListener('pointerdown',doBlanket);
+$('#sopt-lamp').addEventListener('pointerdown',doLamp);
+$('#sopt-lullaby').addEventListener('pointerdown',doLullaby);
+$('#sopt-paci').addEventListener('pointerdown',doPaci);
+$('#sopt-kiss').addEventListener('pointerdown',doKiss);
+$('#blanket').addEventListener('pointerdown',doBlanket);
+$('#lamp').addEventListener('pointerdown',doLamp);
+$('#musicBox').addEventListener('pointerdown',doLullaby);
+const sleepReady=()=>(sleepState.tucked&&sleepState.dark)||comfortCount()>=3;
 function checkAsleep(){
-  if(!(sleepState.tucked&&sleepState.dark)||sleepState.asleep) return;
+  if(!sleepReady()||sleepState.asleep) return;
   setTimeout(()=>{
-    if(!(sleepState.tucked&&sleepState.dark)||scene!=='sleep') return;
+    if(!sleepReady()||sleepState.asleep||scene!=='sleep') return;
     S.yawn(); bunnyClass('bn-yawn',1100);
     setTimeout(()=>{
       if(scene!=='sleep') return;
@@ -995,7 +997,7 @@ $('#sunBtn').addEventListener('pointerdown',()=>{
   bunny.classList.remove('bn-sleep');
   bunnyClass('bn-armsup',1400); bunnyClass('bn-happy',1800); bounce();
   say('Good morning!');
-  confettiRain(); hawaCelebrate();
+  confettiRain();
 });
 
 /* ================= SING ================= */
@@ -1025,7 +1027,7 @@ function singVerse(animal){
     onBeat:n=>{ if(n&&Math.random()<.5) floatNote(r.left+r.width*Math.random(), r.top); },
     onEnd:()=>{
       S[snd](); setTimeout(()=>S[snd](),650);
-      setTimeout(()=>{ S.yay(); confettiRain(); hawaCelebrate(); endVerse(el); },1400);
+      setTimeout(()=>{ S.yay(); confettiRain(); endVerse(el); },1400);
     }});
 }
 function endVerse(el){
@@ -1120,13 +1122,13 @@ function placeToy(toy,slot){
   setTimeout(()=>{ S.pop(); S.chime();
     const r=slot.getBoundingClientRect();
     burst(r.left+r.width/2,r.top+r.height/2,{n:6,shape:'star',spread:10});
-    bunnyClass('bn-happy',700); bounce(); hawaHop();
+    bunnyClass('bn-happy',700); bounce();
     if(++tidyDone>=TIDY_ITEMS.length) setTimeout(tidyCelebrate,500);
   },560);
 }
 function tidyCelebrate(){
   S.yay(); say('All clean! Great job, '+CONFIG.childName+'!');
-  confettiRain(); hawaCelebrate(); bunny.classList.add('bn-dance-move'); bunnyClass('bn-dance',3200); bunnyClass('bn-happy',3200);
+  confettiRain(); bunny.classList.add('bn-dance-move'); bunnyClass('bn-dance',3200); bunnyClass('bn-happy',3200);
   bunnyClass('bn-armsup',3200);
   setTimeout(()=>{ bunny.classList.remove('bn-dance-move');
     $('#messBtn').classList.add('show'); },3300);
@@ -1224,13 +1226,13 @@ function placeRing(ring){
     tone(NOTE[STACK_NOTES[Math.min(stackOrder.length-1,4)]],.45,{type:'triangle',vol:.4});
     const r=ring.getBoundingClientRect();
     burst(r.left+r.width/2,r.top+r.height/2,{n:5,shape:'star',spread:9});
-    bunnyClass('bn-happy',700); bounce(); hawaHop();
+    bunnyClass('bn-happy',700); bounce();
     if(stackOrder.length>=STACK_RINGS.length) setTimeout(stackCelebrate,500);
   },520);
 }
 function stackCelebrate(){
   S.yay(); say('All stacked! Great job, '+CONFIG.childName+'!');
-  confettiRain(); hawaCelebrate();
+  confettiRain();
   bunny.classList.add('bn-dance-move'); bunnyClass('bn-dance',3200); bunnyClass('bn-happy',3200); bunnyClass('bn-armsup',3200);
   setTimeout(()=>{ bunny.classList.remove('bn-dance-move'); $('#stackBtn').classList.add('show'); },3300);
 }

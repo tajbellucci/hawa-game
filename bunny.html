@@ -779,7 +779,8 @@ if(CONFIG.childName){
     const topLoc=Object.entries(locs).sort((a,b)=>b[1]-a[1])[0];
     let h=`<style>
       *{margin:0;padding:0;box-sizing:border-box}
-      body{font-family:system-ui,-apple-system,sans-serif;background:#0f0f1a;color:#eee;min-height:100vh;padding:24px;overflow-y:auto}
+      html,body{overflow:auto!important;height:auto!important}
+      body{font-family:system-ui,-apple-system,sans-serif;background:#0f0f1a;color:#eee;padding:24px}
       .hdr{text-align:center;margin-bottom:32px}
       .hdr h1{font-size:28px;color:#f78fb0;margin-bottom:4px}
       .hdr p{color:#888;font-size:14px}

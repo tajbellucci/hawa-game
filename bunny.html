@@ -116,6 +116,7 @@
       font-size:7.5vmin; font-weight:800; color:#e56a8f; letter-spacing:.5vmin;
       text-shadow:0 3px 0 #fff; white-space:nowrap; }
 
+
   /* ============ FEED SCENE ============ */
   #tray { position:absolute; left:50%; bottom:16vmin; transform:translateX(-50%);
       width:min(92vw,86vmin); height:20vmin; background:#fff6ea; border-radius:5vmin;
@@ -185,9 +186,13 @@
       transition:transform .3s cubic-bezier(.3,1.6,.5,1); }
   .friend svg { width:100%; height:100%; overflow:visible; pointer-events:none; }
   .friend:active { transform:scale(1.1); }
-  #friendCow   { left:5%;  bottom:23%; }
-  #friendDuck  { right:6%; bottom:24%; width:21vmin; height:25vmin; }
-  #friendSheep { right:26%; bottom:19%; width:23vmin; height:26vmin; }
+  #friendCow   { left:2%;  bottom:22%; width:22vmin; height:26vmin; }
+  #friendDuck  { right:2%; bottom:22%; width:20vmin; height:24vmin; }
+  #friendSheep { left:34%; bottom:16%; width:22vmin; height:25vmin; }
+  #friendCat   { right:22%; bottom:22%; width:20vmin; height:24vmin; }
+  #friendDog   { left:18%; bottom:18%; width:22vmin; height:25vmin; }
+  #friendFrog  { right:38%; bottom:16%; width:18vmin; height:21vmin; }
+  #friendOwl   { left:46%; bottom:22%; width:19vmin; height:23vmin; }
   .friend.bopping { animation:friendBop .55s ease-in-out infinite; }
   .friend.swaying { animation:friendSway 1.1s ease-in-out infinite; }
   @keyframes friendBop { 0%,100%{transform:translateY(0) scale(1)} 50%{transform:translateY(-3.5vmin) scale(1.06,.94)} }
@@ -384,7 +389,7 @@
 
   <!-- ================= SPLASH ================= -->
   <div class="scene active" id="splash">
-    <div class="bigTitle" id="gameTitle">🌸 Hawa's Bunny 🌸</div>
+    <div class="bigTitle" id="gameTitle">🌸 Bunny 🌸</div>
     <svg class="tapHint" viewBox="0 0 100 100">
       <circle cx="50" cy="50" r="30" fill="#fff" opacity=".85"/>
       <circle cx="50" cy="50" r="18" fill="#f78fb0"/>
@@ -581,6 +586,72 @@
         <ellipse class="fMouth" cx="90" cy="92" rx="6" ry="3.5" fill="#8e5b4a"/>
       </svg>
     </div>
+    <div class="friend" id="friendCat">
+      <svg viewBox="0 0 180 220">
+        <ellipse cx="90" cy="155" rx="50" ry="48" fill="#f5a623"/>
+        <ellipse cx="90" cy="200" rx="14" ry="6" fill="#e8941c"/>
+        <path d="M48 60 L38 16 L72 48 z" fill="#f5a623"/>
+        <path d="M132 60 L142 16 L108 48 z" fill="#f5a623"/>
+        <path d="M50 58 L44 24 L68 50 z" fill="#ffcdd2"/>
+        <path d="M130 58 L136 24 L112 50 z" fill="#ffcdd2"/>
+        <ellipse cx="90" cy="82" rx="42" ry="38" fill="#f5a623"/>
+        <circle cx="74" cy="76" r="7" fill="#33691e"/><circle cx="106" cy="76" r="7" fill="#33691e"/>
+        <circle cx="76" cy="74" r="2.3" fill="#fff"/><circle cx="108" cy="74" r="2.3" fill="#fff"/>
+        <ellipse cx="90" cy="94" rx="6" ry="4" fill="#f48fb1"/>
+        <path d="M84 100 q6 5 12 0" stroke="#8e5b4a" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+        <line x1="52" y1="88" x2="30" y2="84" stroke="#d4a06a" stroke-width="2" stroke-linecap="round"/>
+        <line x1="52" y1="94" x2="28" y2="96" stroke="#d4a06a" stroke-width="2" stroke-linecap="round"/>
+        <line x1="128" y1="88" x2="150" y2="84" stroke="#d4a06a" stroke-width="2" stroke-linecap="round"/>
+        <line x1="128" y1="94" x2="152" y2="96" stroke="#d4a06a" stroke-width="2" stroke-linecap="round"/>
+        <ellipse class="fMouth" cx="90" cy="104" rx="5" ry="3" fill="#c2547e"/>
+        <path d="M130 155 q18 0 16-20 q-2-16-12-12" stroke="#e8941c" stroke-width="8" fill="none" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <div class="friend" id="friendDog">
+      <svg viewBox="0 0 190 220">
+        <ellipse cx="95" cy="158" rx="54" ry="50" fill="#a0724a"/>
+        <ellipse cx="50" cy="92" rx="22" ry="32" fill="#8b6239" transform="rotate(-15 50 92)"/>
+        <ellipse cx="140" cy="92" rx="22" ry="32" fill="#8b6239" transform="rotate(15 140 92)"/>
+        <ellipse cx="95" cy="84" rx="46" ry="42" fill="#c49a6c"/>
+        <circle cx="78" cy="76" r="7" fill="#26232b"/><circle cx="112" cy="76" r="7" fill="#26232b"/>
+        <circle cx="80" cy="74" r="2.3" fill="#fff"/><circle cx="114" cy="74" r="2.3" fill="#fff"/>
+        <ellipse cx="95" cy="98" rx="14" ry="10" fill="#5d4037"/>
+        <ellipse cx="95" cy="95" rx="6" ry="4" fill="#26232b"/>
+        <path d="M88 106 q7 5 14 0" stroke="#5d4037" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+        <ellipse cx="95" cy="120" rx="18" ry="12" fill="#e8a97a"/>
+        <ellipse class="fMouth" cx="95" cy="114" rx="6" ry="3.5" fill="#8e4a3a"/>
+        <path d="M95 120 Q95 130 90 134" stroke="#5d4037" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <div class="friend" id="friendFrog">
+      <svg viewBox="0 0 180 200">
+        <ellipse cx="50" cy="170" rx="28" ry="14" fill="#4caf50"/>
+        <ellipse cx="130" cy="170" rx="28" ry="14" fill="#4caf50"/>
+        <ellipse cx="90" cy="130" rx="56" ry="50" fill="#66bb6a"/>
+        <circle cx="60" cy="58" r="22" fill="#66bb6a"/><circle cx="120" cy="58" r="22" fill="#66bb6a"/>
+        <circle cx="60" cy="54" r="14" fill="#fff"/><circle cx="120" cy="54" r="14" fill="#fff"/>
+        <circle cx="60" cy="52" r="8" fill="#26232b"/><circle cx="120" cy="52" r="8" fill="#26232b"/>
+        <circle cx="63" cy="49" r="3" fill="#fff"/><circle cx="123" cy="49" r="3" fill="#fff"/>
+        <path d="M70 100 q20 16 40 0" stroke="#388e3c" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+        <ellipse class="fMouth" cx="90" cy="106" rx="8" ry="3.5" fill="#2e7d32"/>
+      </svg>
+    </div>
+    <div class="friend" id="friendOwl">
+      <svg viewBox="0 0 180 220">
+        <ellipse cx="90" cy="150" rx="48" ry="52" fill="#795548"/>
+        <ellipse cx="90" cy="145" rx="38" ry="40" fill="#a1887f"/>
+        <ellipse cx="90" cy="148" rx="28" ry="30" fill="#d7ccc8"/>
+        <circle cx="72" cy="88" r="20" fill="#d7ccc8"/><circle cx="108" cy="88" r="20" fill="#d7ccc8"/>
+        <circle cx="72" cy="86" r="12" fill="#fff"/><circle cx="108" cy="86" r="12" fill="#fff"/>
+        <circle cx="72" cy="86" r="7" fill="#26232b"/><circle cx="108" cy="86" r="7" fill="#26232b"/>
+        <circle cx="75" cy="83" r="2.5" fill="#fff"/><circle cx="111" cy="83" r="2.5" fill="#fff"/>
+        <path d="M82 102 L90 112 L98 102" fill="#ff9800"/>
+        <path d="M50 60 Q40 30 56 42" fill="#795548"/><path d="M130 60 Q140 30 124 42" fill="#795548"/>
+        <path d="M56 58 Q48 38 60 46" fill="#8d6e63"/><path d="M124 58 Q132 38 120 46" fill="#8d6e63"/>
+        <ellipse class="fMouth" cx="90" cy="118" rx="5" ry="3" fill="#5d4037"/>
+        <path d="M66 160 q8 6 16 0 q8 6 16 0" stroke="#8d6e63" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+      </svg>
+    </div>
   </div>
 
   <!-- ================= TIDY ================= -->
@@ -663,10 +734,11 @@
 <script>
 'use strict';
 /* ================= CONFIG ================= */
-/* Shareable: any child can play — add ?name=Ayesha to the URL */
-const CONFIG = { childName:(new URLSearchParams(location.search).get('name')||'Hawa').slice(0,20) };
-document.getElementById('gameTitle').textContent='🌸 '+CONFIG.childName+"'s Bunny 🌸";
-document.title=CONFIG.childName+"'s Bunny Baby";
+const CONFIG = { childName:(new URLSearchParams(location.search).get('name')||'').slice(0,20) };
+if(CONFIG.childName){
+  document.getElementById('gameTitle').textContent='🌸 '+CONFIG.childName+"'s Bunny 🌸";
+  document.title=CONFIG.childName+"'s Bunny Baby";
+}
 
 /* ================= AUDIO ENGINE (all synth, offline) ================= */
 let AC=null, master=null;
@@ -701,6 +773,10 @@ const S={
   moo(){ tone(180,.55,{type:'sawtooth',vol:.4,slide:130,vib:8}); tone(90,.55,{type:'sine',vol:.3,slide:70}); },
   quack(){ tone(420,.11,{type:'sawtooth',vol:.35,slide:300}); tone(400,.11,{type:'sawtooth',vol:.3,slide:280,at:.14}); },
   baa(){ tone(300,.5,{type:'sawtooth',vol:.32,slide:260,vib:26}); },
+  meow(){ tone(700,.3,{type:'sine',vol:.35,slide:500}); tone(600,.25,{type:'sine',vol:.25,slide:380,at:.3}); },
+  woof(){ tone(280,.12,{type:'square',vol:.35,slide:180}); tone(350,.1,{type:'square',vol:.3,slide:220,at:.14}); },
+  ribbit(){ tone(220,.15,{type:'sawtooth',vol:.3,slide:160}); tone(200,.15,{type:'sawtooth',vol:.25,slide:140,at:.17}); },
+  hoot(){ tone(440,.35,{type:'sine',vol:.3,slide:350}); tone(380,.4,{type:'sine',vol:.25,slide:300,at:.38}); },
   twinkleTap(){ tone(1046+Math.random()*400,.4,{vol:.25}); },
   snoreIn(){ tone(120,.6,{type:'sawtooth',vol:.12,slide:160,vib:6}); },
   snoreOut(){ tone(160,.5,{type:'sine',vol:.1,slide:110}); },
@@ -739,6 +815,33 @@ const TUNE_LULLABY=[['E4',1],['E4',1],['G4',2],['E4',1],['E4',1],['G4',2],
   ['E4',1],['G4',1],['C5',2],['B4',2],['A4',1],['A4',1],['G4',2],
   ['D4',1],['E4',1],['F4',2],['D4',1],['D4',1],['E4',1],['F4',2],
   ['D4',1],['F4',1],['B4',2],['A4',2],['G4',1],['B4',1],['C5',3],[null,2]];
+const TUNE_MARY=[['E4',1],['D4',1],['C4',1],['D4',1],['E4',1],['E4',1],['E4',2],
+  ['D4',1],['D4',1],['D4',2],['E4',1],['G4',1],['G4',2],
+  ['E4',1],['D4',1],['C4',1],['D4',1],['E4',1],['E4',1],['E4',1],['E4',1],
+  ['D4',1],['D4',1],['E4',1],['D4',1],['C4',3]];
+const TUNE_ROW=[['C4',1],['C4',1],['C4',.67],['D4',.33],['E4',1],['E4',1],['D4',.67],['E4',.33],['F4',1],
+  ['G4',2],[null,.5],['C5',.5],['C5',.5],['B4',.5],['A4',.5],['G4',1],[null,.5],['F4',.5],['G4',.5],['A4',.5],['F4',1],
+  ['E4',1],['E4',1],['D4',.67],['E4',.33],['F4',1],['F4',1],['E4',.67],['F4',.33],['G4',1],
+  ['C4',2],[null,.5],['G4',.5],['G4',.5],['F4',.5],['E4',.5],['D4',1],[null,.5],['C5',.5],['C5',.5],['B4',.5],['A4',.5],['G4',1],
+  ['C5',1],['C5',1],['B4',.67],['C5',.33],['D5',1],['D5',1],['C5',.67],['D5',.33],['E5',1],
+  ['C4',2]];
+const TUNE_BAA=[['G4',1],['G4',1],['D4',2],['E4',1],['E4',1],['D4',2],
+  ['B4',1],['B4',1],['A4',1],['A4',1],['G4',2],[null,1],
+  ['G4',1],['G4',1],['D4',2],['E4',1],['E4',1],['D4',2],
+  ['B4',1],['A4',1],['A4',1],['G4',1],['D4',1],['E4',1],['F4',1],['E4',1],['D4',2]];
+const TUNE_HAPPY=[['G4',1],['G4',1],['A4',1],['G4',1],['C5',2],
+  ['G4',1],['G4',1],['A4',1],['G4',1],['D5',2],
+  ['G4',1],['G4',1],['G5',1],['E5',1],['C5',1],['A4',1],['F5',2],
+  ['E5',1],['C5',1],['D5',1],['B4',1],['C5',3]];
+const TUNE_FROG=[['C4',1],['D4',1],['E4',1],['F4',1],['G4',1],['A4',1],['B4',1],['C5',1],
+  ['D5',1],['C5',1],['B4',1],['A4',1],['G4',1],['F4',1],['E4',1],['D4',1],['C4',2]];
+const TUNE_OWL=[['E4',1],['G4',1],['A4',1],['G4',1],['E4',1],['G4',1],['A4',1],['G4',1],
+  ['E4',1],['G4',1],['A4',1],['G4',1],['E4',1],['G4',1],['A4',2],
+  ['G4',1],['A4',1],['B4',1],['A4',1],['G4',1],['A4',1],['B4',1],['A4',1],
+  ['G4',1],['A4',1],['B4',1],['A4',1],['G4',1],['A4',1],['G4',2]];
+const ANIMAL_TUNE={cow:TUNE_OLDMAC,duck:TUNE_MARY,sheep:TUNE_ROW,cat:TUNE_BAA,dog:TUNE_HAPPY,frog:TUNE_FROG,owl:TUNE_OWL};
+const ANIMAL_STYLE={cow:{bpm:132,type:'triangle'},duck:{bpm:126,type:'sine'},sheep:{bpm:100,type:'triangle'},
+  cat:{bpm:118,type:'sine'},dog:{bpm:140,type:'square'},frog:{bpm:110,type:'sine'},owl:{bpm:96,type:'sine'}};
 
 /* optional gentle voice */
 function say(txt){ try{ if(!window.speechSynthesis) return;
@@ -1007,7 +1110,7 @@ inits.sing=()=>{ versePlaying=false;
 cleanups.sing=()=>{ $$('.friend').forEach(f=>f.classList.remove('swaying','bopping','singing'));
   bunny.classList.remove('bn-dance-move','bn-dance'); };
 
-const ANIMAL_SOUND={cow:'moo',duck:'quack',sheep:'baa'};
+const ANIMAL_SOUND={cow:'moo',duck:'quack',sheep:'baa',cat:'meow',dog:'woof',frog:'ribbit',owl:'hoot'};
 function floatNote(x,y){ const d=document.createElement('div'); d.className='noteFloat';
   d.innerHTML=PT_SHAPES.note.replaceAll('COL',PALETTE[Math.floor(Math.random()*PALETTE.length)]);
   d.style.left=x+'px'; d.style.top=y+'px';
@@ -1023,7 +1126,7 @@ function singVerse(animal){
   bunny.classList.add('bn-dance-move'); bunnyClass('bn-dance',20000); bunnyClass('bn-armsup',0);
   bunny.classList.add('bn-armsup');
   const r=el.getBoundingClientRect();
-  playSong(TUNE_OLDMAC,{bpm:132,type:'triangle',vol:.36,
+  playSong(ANIMAL_TUNE[animal],{...ANIMAL_STYLE[animal],vol:.36,
     onBeat:n=>{ if(n&&Math.random()<.5) floatNote(r.left+r.width*Math.random(), r.top); },
     onEnd:()=>{
       S[snd](); setTimeout(()=>S[snd](),650);
@@ -1038,6 +1141,10 @@ function endVerse(el){
 $('#friendCow').addEventListener('pointerdown',()=>{ if(versePlaying){S.moo();return;} S.moo(); setTimeout(()=>singVerse('cow'),500); });
 $('#friendDuck').addEventListener('pointerdown',()=>{ if(versePlaying){S.quack();return;} S.quack(); setTimeout(()=>singVerse('duck'),450); });
 $('#friendSheep').addEventListener('pointerdown',()=>{ if(versePlaying){S.baa();return;} S.baa(); setTimeout(()=>singVerse('sheep'),500); });
+$('#friendCat').addEventListener('pointerdown',()=>{ if(versePlaying){S.meow();return;} S.meow(); setTimeout(()=>singVerse('cat'),450); });
+$('#friendDog').addEventListener('pointerdown',()=>{ if(versePlaying){S.woof();return;} S.woof(); setTimeout(()=>singVerse('dog'),400); });
+$('#friendFrog').addEventListener('pointerdown',()=>{ if(versePlaying){S.ribbit();return;} S.ribbit(); setTimeout(()=>singVerse('frog'),450); });
+$('#friendOwl').addEventListener('pointerdown',()=>{ if(versePlaying){S.hoot();return;} S.hoot(); setTimeout(()=>singVerse('owl'),500); });
 $('#starSongBtn').addEventListener('pointerdown',()=>{
   if(versePlaying) return; versePlaying=true;
   S.chime();

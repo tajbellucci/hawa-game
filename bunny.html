@@ -21,6 +21,7 @@
   body.s-sleep.dark #stage { background:linear-gradient(180deg,#1c1840 0%,#2a2260 60%,#3a2d72 100%); }
   body.s-sing  #stage { background:linear-gradient(180deg,#ffd9e8 0%,#ffc4dd 50%,#ffb0d0 100%); }
   body.s-tidy  #stage { background:linear-gradient(180deg,#d8f3ff 0%,#c2e9fb 55%,#b0ddf4 100%); }
+  body.s-stack #stage { background:linear-gradient(180deg,#eafbe7 0%,#d7f5d0 55%,#c3edc4 100%); }
   body.s-splash #stage { background:linear-gradient(180deg,#ffe4ec 0%,#ffd3e0 60%,#ffc2d4 100%); }
 
   .scene { position:absolute; inset:0; opacity:0; pointer-events:none; transition:opacity .5s ease; }
@@ -37,6 +38,7 @@
   body.s-sleep  #bunnyWrap { left:50%; top:55%; width:46vmin; height:64.4vmin; }
   body.s-sing   #bunnyWrap { left:50%; top:44%; width:42vmin; height:58.8vmin; }
   body.s-tidy   #bunnyWrap { left:17%; top:60%; width:34vmin; height:47.6vmin; }
+  body.s-stack  #bunnyWrap { left:82%; top:62%; width:32vmin; height:44.8vmin; }
 
   /* bunny idle breathing */
   #bunnyBody { animation:breathe 3.4s ease-in-out infinite; transform-origin:200px 460px; }
@@ -208,6 +210,29 @@
       box-shadow:0 5px 0 rgba(50,110,160,.18); transform:scale(0); transition:transform .5s cubic-bezier(.3,1.7,.5,1); }
   #messBtn.show { transform:scale(1); animation:hintPulse 1.5s ease-in-out infinite .6s; }
   #messBtn svg { width:100%; height:100%; }
+
+  /* ============ STACK (ring stacker) SCENE ============ */
+  #pegRod { position:absolute; left:38%; bottom:14vmin; transform:translateX(-50%);
+      width:3vmin; height:44vmin; border-radius:1.5vmin; z-index:5; pointer-events:none;
+      background:linear-gradient(90deg,#8a5a38,#c98a5b 45%,#a1704a); }
+  #pegStand { position:absolute; left:38%; bottom:12vmin; transform:translateX(-50%);
+      width:20vmin; z-index:6; pointer-events:none; }
+  #pegHint { position:absolute; left:38%; bottom:12vmin; transform:translateX(-50%);
+      width:15vmin; height:60vmin; z-index:7; pointer-events:none; opacity:0; transition:opacity .3s; }
+  #pegHint.show { opacity:1; animation:slotHint 1s ease-in-out infinite; border-radius:2vmin; }
+  .ring { position:absolute; z-index:40; cursor:grab; touch-action:none;
+      transition:left .5s cubic-bezier(.4,0,.4,1.2), top .5s cubic-bezier(.4,0,.4,1.2),
+      bottom .5s cubic-bezier(.4,0,.4,1.2), transform .2s; }
+  .ring svg { width:100%; height:100%; overflow:visible; pointer-events:none;
+      filter:drop-shadow(0 4px 4px rgba(40,90,60,.25)); display:block; }
+  .ring.dragging { transition:none; z-index:60; transform:scale(1.18) !important; cursor:grabbing; }
+  .ring.placed { left:38% !important; transform:translateX(-50%); pointer-events:none; }
+  .ring.falling { transition:left .7s cubic-bezier(.4,0,.5,1), top .7s cubic-bezier(.4,0,.5,1), transform .7s; }
+  #stackBtn { position:absolute; left:5vmin; top:5vmin; width:17vmin; height:17vmin; border-radius:50%;
+      border:none; background:#fff; cursor:pointer; z-index:45; padding:2.2vmin;
+      box-shadow:0 5px 0 rgba(50,140,90,.18); transform:scale(0); transition:transform .5s cubic-bezier(.3,1.7,.5,1); }
+  #stackBtn.show { transform:scale(1); animation:hintPulse 1.5s ease-in-out infinite .6s; }
+  #stackBtn svg { width:100%; height:100%; }
 
   /* ============ PARTICLES ============ */
   .pt { position:fixed; pointer-events:none; z-index:80; will-change:transform,opacity; }
@@ -537,6 +562,25 @@
     </button>
   </div>
 
+  <!-- ================= STACK (ring stacker) ================= -->
+  <div class="scene" id="stack">
+    <div id="pegHint"></div>
+    <div id="pegRod"></div>
+    <svg id="pegStand" viewBox="0 0 140 60" preserveAspectRatio="xMidYMax meet">
+      <ellipse cx="70" cy="48" rx="66" ry="10" fill="#c98a5b"/>
+      <ellipse cx="70" cy="44" rx="66" ry="10" fill="#e0a06e"/>
+      <circle cx="70" cy="30" r="9" fill="#a1745a"/>
+      <circle cx="66" cy="27" r="3" fill="#3a2b20"/><circle cx="74" cy="27" r="3" fill="#3a2b20"/>
+      <path d="M64 34 q6 5 12 0" stroke="#3a2b20" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    </svg>
+    <button id="stackBtn">
+      <svg viewBox="0 0 100 100">
+        <path d="M50 12 a26 26 0 1 1 -18 44" fill="none" stroke="#66bb6a" stroke-width="10" stroke-linecap="round"/>
+        <path d="M22 44 l10 16 14-12 z" fill="#66bb6a"/>
+      </svg>
+    </button>
+  </div>
+
   <!-- ================= HAWA CELEBRATION POP ================= -->
   <div id="hawaPop"><img src="hawa.jpeg" alt=""></div>
 
@@ -568,6 +612,15 @@
         <path d="M18 46 h64 l-8 34 a8 8 0 0 1 -8 6 H34 a8 8 0 0 1 -8-6 z" fill="#8d6e63"/>
         <path d="M30 46 q0-22 20-22 q20 0 20 22" fill="none" stroke="#8d6e63" stroke-width="7" stroke-linecap="round"/>
         <circle cx="38" cy="40" r="9" fill="#ef5350"/><circle cx="54" cy="36" r="9" fill="#ffd54f"/><circle cx="66" cy="42" r="9" fill="#66bb6a"/>
+      </svg>
+    </button>
+    <button class="navBtn" data-scene="stack" aria-label="Stack">
+      <svg viewBox="0 0 100 100">
+        <rect x="46" y="14" width="8" height="72" rx="4" fill="#a1745a"/>
+        <ellipse cx="50" cy="86" rx="30" ry="9" fill="#c98a5b"/>
+        <ellipse cx="50" cy="38" rx="26" ry="9" fill="#ef5350"/>
+        <ellipse cx="50" cy="54" rx="21" ry="7.5" fill="#ffd54f"/>
+        <ellipse cx="50" cy="68" rx="16" ry="6" fill="#66bb6a"/>
       </svg>
     </button>
   </div>
@@ -1030,6 +1083,102 @@ addEventListener('resize',()=>{ if(scene==='tidy'){
     const toy=$(`.toy[data-id="${s.dataset.id}"]`);
     if(toy&&toy.classList.contains('placed')){ toy.style.left=p.x+'px'; toy.style.top=p.y+'px'; } });
 }});
+
+/* ================= STACK (ring stacker) ================= */
+function ringSVG(color,shade){
+  return `<svg viewBox="0 0 100 40">
+    <path fill-rule="evenodd" fill="${color}" d="M2,20 A48,18 0 1,0 98,20 A48,18 0 1,0 2,20 Z M27,20 A23,7.5 0 1,0 73,20 A23,7.5 0 1,0 27,20 Z"/>
+    <path d="M14 12 A46 16 0 0 1 60 4" stroke="${shade}" stroke-width="4" fill="none" stroke-linecap="round" opacity=".55"/>
+  </svg>`;
+}
+const STACK_RINGS=[
+  {id:'g1', w:30, color:'#ef5350', shade:'#ffaba0'},
+  {id:'g2', w:26, color:'#ffb74d', shade:'#ffe0b2'},
+  {id:'g3', w:22, color:'#ffd54f', shade:'#fff3c4'},
+  {id:'g4', w:18, color:'#66bb6a', shade:'#c8e6c9'},
+  {id:'g5', w:14, color:'#42a5f5', shade:'#bbdefb'},
+];
+const STACK_STEP=4.4, STACK_BASE=13;
+let stackOrder=[], sDragItem=null, sDragOff={x:0,y:0}, sDragMoved=false;
+inits.stack=()=>{ buildStack(); };
+cleanups.stack=()=>{ $$('.ring').forEach(e=>e.remove()); $('#stackBtn').classList.remove('show'); $('#pegHint').classList.remove('show'); };
+
+function ringScatterSpot(i){
+  const spots=[[62,10],[70,26],[58,44],[66,60],[54,76]];
+  const [xp,yp]=spots[i%spots.length];
+  return {left:`calc(${xp}% + ${Math.random()*4}vmin)`, top:`calc(${yp}% + ${Math.random()*3}vmin)`};
+}
+function buildStack(){
+  $$('.ring').forEach(e=>e.remove()); stackOrder=[];
+  $('#stackBtn').classList.remove('show'); $('#pegHint').classList.remove('show');
+  const sc=$('#stack');
+  STACK_RINGS.forEach((rg,i)=>{
+    const ring=document.createElement('div'); ring.className='ring'; ring.dataset.id=rg.id;
+    ring.style.width=rg.w+'vmin'; ring.style.height=(rg.w*.4)+'vmin';
+    const sp=ringScatterSpot(i); ring.style.left=sp.left; ring.style.top=sp.top;
+    ring.innerHTML=ringSVG(rg.color,rg.shade); sc.appendChild(ring);
+    ring.addEventListener('pointerdown',ev=>startSDrag(ev,ring));
+  });
+}
+function startSDrag(ev,ring){
+  if(ring.classList.contains('placed')) return;
+  ev.preventDefault();
+  sDragItem=ring; sDragMoved=false;
+  const r=ring.getBoundingClientRect();
+  sDragOff={x:ev.clientX-r.left, y:ev.clientY-r.top};
+  ring.classList.add('dragging'); ring.setPointerCapture(ev.pointerId);
+  $('#pegHint').classList.add('show');
+  S.tap();
+}
+document.addEventListener('pointermove',ev=>{
+  if(!sDragItem) return;
+  const dx=Math.abs(ev.movementX)+Math.abs(ev.movementY);
+  if(dx>1) sDragMoved=true;
+  sDragItem.style.left=(ev.clientX-sDragOff.x)+'px';
+  sDragItem.style.top=(ev.clientY-sDragOff.y)+'px';
+});
+document.addEventListener('pointerup',ev=>{
+  if(!sDragItem) return;
+  const ring=sDragItem; sDragItem=null; ring.classList.remove('dragging');
+  $('#pegHint').classList.remove('show');
+  const peg=$('#pegStand').getBoundingClientRect(), rr=ring.getBoundingClientRect();
+  const dist=Math.hypot(peg.left+peg.width/2-(rr.left+rr.width/2), peg.top+peg.height*.3-(rr.top+rr.height/2));
+  if(!sDragMoved || dist<vmin(26)){ placeRing(ring); }
+  else { S.tap(); }
+});
+function placeRing(ring){
+  if(ring.classList.contains('placed')) return;
+  const idx=stackOrder.length;
+  stackOrder.push(ring.dataset.id);
+  ring.classList.add('placed');
+  ring.style.bottom=(STACK_BASE+idx*STACK_STEP)+'vmin';
+  ring.style.top=''; ring.style.zIndex=10+idx;
+  setTimeout(()=>{ S.pop(); S.chime();
+    const r=ring.getBoundingClientRect();
+    burst(r.left+r.width/2,r.top+r.height/2,{n:5,shape:'star',spread:9});
+    bunnyClass('bn-happy',700); bounce();
+    if(stackOrder.length>=STACK_RINGS.length) setTimeout(stackCelebrate,500);
+  },520);
+}
+function stackCelebrate(){
+  S.yay(); say('All stacked! Great job, '+CONFIG.childName+'!');
+  confettiRain(); hawaCelebrate();
+  bunny.classList.add('bn-dance-move'); bunnyClass('bn-dance',3200); bunnyClass('bn-happy',3200); bunnyClass('bn-armsup',3200);
+  setTimeout(()=>{ bunny.classList.remove('bn-dance-move'); $('#stackBtn').classList.add('show'); },3300);
+}
+$('#stackBtn').addEventListener('pointerdown',()=>{
+  S.boing(); $('#stackBtn').classList.remove('show');
+  $$('.ring').forEach((ring,i)=>{
+    ring.classList.remove('placed'); ring.classList.add('falling');
+    ring.style.bottom=''; ring.style.zIndex='';
+    const sp=ringScatterSpot(i); ring.style.left=sp.left; ring.style.top=sp.top;
+    ring.style.transform=`rotate(${(Math.random()*2-1)*40}deg)`;
+    setTimeout(()=>{ ring.classList.remove('falling'); ring.style.transform=''; },720);
+  });
+  stackOrder=[]; bunnyClass('bn-happy',700); S.giggle();
+});
+
+/* keep placed rings pinned on resize/rotate (bottom/left:38% already relative, no-op needed) */
 
 /* block context menu / double-tap zoom */
 document.addEventListener('contextmenu',e=>e.preventDefault());

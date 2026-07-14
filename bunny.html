@@ -752,12 +752,16 @@ if(CONFIG.childName){
     device:navigator.userAgent,screen:innerWidth+'x'+innerHeight,location:'...'};
 
   if(location.search.includes('stats')){
-    document.body.innerHTML='<div style="padding:20px;font:15px/1.6 sans-serif;background:#1a1a2e;color:#eee;min-height:100vh">'+
+    document.body.innerHTML='<div style="padding:20px;font:15px/1.6 sans-serif;background:#0f0f1a;color:#eee;min-height:100vh">'+
       '<h1 style="color:#f78fb0;border-bottom:2px solid #f78fb0;padding-bottom:8px">Bunny Game Stats</h1>'+
       '<p style="color:#aaa">Loading location...</p></div>';
     const container=document.body.firstChild;
-    fetch('https://ipapi.co/json/').then(r=>r.json()).then(loc=>{
-      visit.location=loc.city+', '+loc.region+', '+loc.country_name;
+    Promise.any([
+      fetch('https://ipapi.co/json/').then(r=>r.json()),
+      fetch('https://ipwho.is/').then(r=>r.json()),
+      fetch('https://freeipapi.com/api/json').then(r=>r.json())
+    ]).then(loc=>{
+      visit.location=[loc.city,loc.region||loc.region_name,loc.country||loc.country_name].filter(Boolean).join(', ');
       stats.push(visit); localStorage.setItem(KEY,JSON.stringify(stats));
       renderStats(container,stats);
     }).catch(()=>{
@@ -767,8 +771,12 @@ if(CONFIG.childName){
     throw 'stats';
   }
 
-  fetch('https://ipapi.co/json/').then(r=>r.json()).then(loc=>{
-    visit.location=loc.city+', '+loc.region+', '+loc.country_name;
+  Promise.any([
+    fetch('https://ipapi.co/json/').then(r=>r.json()),
+    fetch('https://ipwho.is/').then(r=>r.json()),
+    fetch('https://freeipapi.com/api/json').then(r=>r.json())
+  ]).then(loc=>{
+    visit.location=[loc.city,loc.region||loc.region_name,loc.country||loc.country_name].filter(Boolean).join(', ');
   }).catch(()=>{ visit.location='(unknown)'; })
     .finally(()=>{ stats.push(visit); localStorage.setItem(KEY,JSON.stringify(stats)); });
 

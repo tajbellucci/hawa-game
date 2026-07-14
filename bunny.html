@@ -773,19 +773,42 @@ if(CONFIG.childName){
     .finally(()=>{ stats.push(visit); localStorage.setItem(KEY,JSON.stringify(stats)); });
 
   function renderStats(el,arr){
-    let html='<h1 style="color:#f78fb0;border-bottom:2px solid #f78fb0;padding-bottom:8px">Bunny Game Stats</h1>';
-    html+='<p style="color:#aaa;margin-bottom:20px">Total visits: <b style="color:#fff">'+arr.length+'</b></p>';
+    const names={}; arr.forEach(v=>{ names[v.name]=(names[v.name]||0)+1; });
+    const locs={}; arr.forEach(v=>{ if(v.location&&v.location!=='(unknown)') locs[v.location]=(locs[v.location]||0)+1; });
+    const topName=Object.entries(names).sort((a,b)=>b[1]-a[1])[0];
+    const topLoc=Object.entries(locs).sort((a,b)=>b[1]-a[1])[0];
+    let h=`<style>
+      *{margin:0;padding:0;box-sizing:border-box}
+      body{font-family:system-ui,-apple-system,sans-serif;background:#0f0f1a;color:#eee;min-height:100vh;padding:24px}
+      .hdr{text-align:center;margin-bottom:32px}
+      .hdr h1{font-size:28px;color:#f78fb0;margin-bottom:4px}
+      .hdr p{color:#888;font-size:14px}
+      .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-bottom:32px}
+      .card{background:#1a1a2e;border-radius:14px;padding:18px;text-align:center;border:1px solid #2a2a44}
+      .card .num{font-size:32px;font-weight:800;color:#f78fb0}
+      .card .lbl{font-size:12px;color:#888;margin-top:4px;text-transform:uppercase;letter-spacing:1px}
+      .card.green .num{color:#66bb6a} .card.blue .num{color:#42a5f5} .card.amber .num{color:#ffd54f}
+      table{width:100%;border-collapse:collapse;background:#1a1a2e;border-radius:14px;overflow:hidden}
+      th{text-align:left;padding:12px 16px;background:#252540;color:#f78fb0;font-size:12px;text-transform:uppercase;letter-spacing:1px}
+      td{padding:10px 16px;border-top:1px solid #2a2a44;font-size:14px;vertical-align:top}
+      tr:hover td{background:#1f1f38}
+      .name{color:#fff;font-weight:600} .loc{color:#66bb6a} .date{color:#aaa} .dev{color:#555;font-size:11px;word-break:break-all}
+    </style>
+    <div class="hdr"><h1>Bunny Game Stats</h1><p>${arr.length} total visit${arr.length!==1?'s':''}</p></div>
+    <div class="cards">
+      <div class="card"><div class="num">${arr.length}</div><div class="lbl">Total Visits</div></div>
+      <div class="card green"><div class="num">${Object.keys(names).length}</div><div class="lbl">Unique Names</div></div>
+      <div class="card blue"><div class="num">${Object.keys(locs).length}</div><div class="lbl">Locations</div></div>
+      <div class="card amber"><div class="num">${topName?topName[0]:'-'}</div><div class="lbl">Top Name</div></div>
+    </div>
+    <table><thead><tr><th>#</th><th>Date</th><th>Name</th><th>Location</th><th>Screen</th><th>Device</th></tr></thead><tbody>`;
     arr.slice().reverse().forEach((v,i)=>{
       const d=new Date(v.ts);
-      html+='<div style="background:#252540;border-radius:10px;padding:14px 18px;margin-bottom:12px;border-left:4px solid #f78fb0">'+
-        '<div><b style="color:#f78fb0">Visit #'+(arr.length-i)+'</b> — <span style="color:#aaa">'+d.toLocaleDateString()+' '+d.toLocaleTimeString()+'</span></div>'+
-        '<div><b>Name:</b> <span style="color:#fff">'+v.name+'</span></div>'+
-        '<div><b>Location:</b> <span style="color:#66bb6a">'+v.location+'</span></div>'+
-        '<div><b>Screen:</b> '+v.screen+'</div>'+
-        '<div style="font-size:12px;color:#666;margin-top:4px;word-break:break-all">'+v.device+'</div>'+
-        '</div>';
+      h+=`<tr><td style="color:#666">${arr.length-i}</td><td class="date">${d.toLocaleDateString()}<br>${d.toLocaleTimeString()}</td>
+        <td class="name">${v.name}</td><td class="loc">${v.location}</td><td style="color:#aaa">${v.screen}</td>
+        <td class="dev">${v.device}</td></tr>`;
     });
-    el.innerHTML=html;
+    el.innerHTML=h+'</tbody></table>';
   }
 })();
 

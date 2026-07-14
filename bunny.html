@@ -748,18 +748,44 @@ if(CONFIG.childName){
 (function(){
   const KEY='bunny_stats';
   const stats=JSON.parse(localStorage.getItem(KEY)||'[]');
-  stats.push({
-    ts:Date.now(),
-    date:new Date().toISOString(),
-    name:CONFIG.childName||'(none)',
-    device:navigator.userAgent,
-    screen:innerWidth+'x'+innerHeight
-  });
-  localStorage.setItem(KEY,JSON.stringify(stats));
+  const visit={ts:Date.now(),date:new Date().toISOString(),name:CONFIG.childName||'(none)',
+    device:navigator.userAgent,screen:innerWidth+'x'+innerHeight,location:'...'};
 
   if(location.search.includes('stats')){
-    document.body.innerHTML='<pre style="padding:20px;font:14px monospace;background:#1a1a2e;color:#eee;min-height:100vh;white-space:pre-wrap">'+JSON.stringify(stats,null,2)+'</pre>';
+    document.body.innerHTML='<div style="padding:20px;font:15px/1.6 sans-serif;background:#1a1a2e;color:#eee;min-height:100vh">'+
+      '<h1 style="color:#f78fb0;border-bottom:2px solid #f78fb0;padding-bottom:8px">Bunny Game Stats</h1>'+
+      '<p style="color:#aaa">Loading location...</p></div>';
+    const container=document.body.firstChild;
+    fetch('https://ipapi.co/json/').then(r=>r.json()).then(loc=>{
+      visit.location=loc.city+', '+loc.region+', '+loc.country_name;
+      stats.push(visit); localStorage.setItem(KEY,JSON.stringify(stats));
+      renderStats(container,stats);
+    }).catch(()=>{
+      visit.location='(unknown)'; stats.push(visit); localStorage.setItem(KEY,JSON.stringify(stats));
+      renderStats(container,stats);
+    });
     throw 'stats';
+  }
+
+  fetch('https://ipapi.co/json/').then(r=>r.json()).then(loc=>{
+    visit.location=loc.city+', '+loc.region+', '+loc.country_name;
+  }).catch(()=>{ visit.location='(unknown)'; })
+    .finally(()=>{ stats.push(visit); localStorage.setItem(KEY,JSON.stringify(stats)); });
+
+  function renderStats(el,arr){
+    let html='<h1 style="color:#f78fb0;border-bottom:2px solid #f78fb0;padding-bottom:8px">Bunny Game Stats</h1>';
+    html+='<p style="color:#aaa;margin-bottom:20px">Total visits: <b style="color:#fff">'+arr.length+'</b></p>';
+    arr.slice().reverse().forEach((v,i)=>{
+      const d=new Date(v.ts);
+      html+='<div style="background:#252540;border-radius:10px;padding:14px 18px;margin-bottom:12px;border-left:4px solid #f78fb0">'+
+        '<div><b style="color:#f78fb0">Visit #'+(arr.length-i)+'</b> — <span style="color:#aaa">'+d.toLocaleDateString()+' '+d.toLocaleTimeString()+'</span></div>'+
+        '<div><b>Name:</b> <span style="color:#fff">'+v.name+'</span></div>'+
+        '<div><b>Location:</b> <span style="color:#66bb6a">'+v.location+'</span></div>'+
+        '<div><b>Screen:</b> '+v.screen+'</div>'+
+        '<div style="font-size:12px;color:#666;margin-top:4px;word-break:break-all">'+v.device+'</div>'+
+        '</div>';
+    });
+    el.innerHTML=html;
   }
 })();
 

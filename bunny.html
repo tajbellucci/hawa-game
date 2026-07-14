@@ -745,12 +745,14 @@ if(CONFIG.childName){
 }
 
 /* ================= TRACKER ================= */
+const TRACK={events:[],sceneStart:null,currentScene:null};
+TRACK.log=function(type,data){ this.events.push({ts:Date.now(),type,...data}); };
+
 (function(){
   const KEY='bunny_stats';
-  const REMOTE='https://script.google.com/macros/s/AKfycbx_DEV_KEY/exec';
   const stats=JSON.parse(localStorage.getItem(KEY)||'[]');
   const visit={ts:Date.now(),date:new Date().toISOString(),name:CONFIG.childName||'(none)',
-    device:navigator.userAgent,screen:innerWidth+'x'+innerHeight,location:'...'};
+    device:navigator.userAgent,screen:innerWidth+'x'+innerHeight,location:'...',events:[]};
 
   function getLocation(){
     return Promise.any([
@@ -789,11 +791,28 @@ if(CONFIG.childName){
     localStorage.setItem(KEY+'_all',JSON.stringify(allStats));
   });
 
+  window.addEventListener('beforeunload',()=>{
+    visit.events=TRACK.events;
+    visit.duration=Date.now()-visit.ts;
+    const allStats=JSON.parse(localStorage.getItem(KEY+'_all')||'[]');
+    if(allStats.length) allStats[allStats.length-1].events=TRACK.events;
+    localStorage.setItem(KEY+'_all',JSON.stringify(allStats));
+  });
+
   function renderStats(el,arr){
     const names={}; arr.forEach(v=>{ names[v.name]=(names[v.name]||0)+1; });
     const locs={}; arr.forEach(v=>{ if(v.location&&v.location!=='(unknown)') locs[v.location]=(locs[v.location]||0)+1; });
     const topName=Object.entries(names).sort((a,b)=>b[1]-a[1])[0];
-    const topLoc=Object.entries(locs).sort((a,b)=>b[1]-a[1])[0];
+
+    const allEvents=arr.flatMap(v=>(v.events||[]));
+    const sceneCounts={}; allEvents.filter(e=>e.type==='scene_enter').forEach(e=>{ sceneCounts[e.scene]=(sceneCounts[e.scene]||0)+1; });
+    const feedCounts={}; allEvents.filter(e=>e.type==='feed').forEach(e=>{ feedCounts[e.food]=(feedCounts[e.food]||0)+1; });
+    const singCounts={}; allEvents.filter(e=>e.type==='sing').forEach(e=>{ singCounts[e.animal]=(singCounts[e.animal]||0)+1; });
+    const sleepCounts={}; allEvents.filter(e=>e.type==='sleep_action').forEach(e=>{ sleepCounts[e.action]=(sleepCounts[e.action]||0)+1; });
+    const tidyDone=allEvents.filter(e=>e.type==='tidy_complete').length;
+    const stackDone=allEvents.filter(e=>e.type==='stack_complete').length;
+    const sceneDurations={}; allEvents.filter(e=>e.type==='scene_exit').forEach(e=>{ sceneDurations[e.scene]=(sceneDurations[e.scene]||0)+e.duration; });
+
     let h=`<style>
       *{margin:0;padding:0;box-sizing:border-box}
       html,body{overflow:auto!important;height:auto!important}
@@ -801,24 +820,69 @@ if(CONFIG.childName){
       .hdr{text-align:center;margin-bottom:32px}
       .hdr h1{font-size:28px;color:#f78fb0;margin-bottom:4px}
       .hdr p{color:#888;font-size:14px}
-      .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-bottom:32px}
+      .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-bottom:32px}
       .card{background:#1a1a2e;border-radius:14px;padding:18px;text-align:center;border:1px solid #2a2a44}
-      .card .num{font-size:32px;font-weight:800;color:#f78fb0}
-      .card .lbl{font-size:12px;color:#888;margin-top:4px;text-transform:uppercase;letter-spacing:1px}
+      .card .num{font-size:28px;font-weight:800;color:#f78fb0}
+      .card .lbl{font-size:11px;color:#888;margin-top:4px;text-transform:uppercase;letter-spacing:1px}
       .card.green .num{color:#66bb6a} .card.blue .num{color:#42a5f5} .card.amber .num{color:#ffd54f}
-      table{width:100%;border-collapse:collapse;background:#1a1a2e;border-radius:14px;overflow:hidden}
+      .card.pink .num{color:#f48fb1} .card.purple .num{color:#ba68c8}
+      table{width:100%;border-collapse:collapse;background:#1a1a2e;border-radius:14px;overflow:hidden;margin-bottom:24px}
       th{text-align:left;padding:12px 16px;background:#252540;color:#f78fb0;font-size:12px;text-transform:uppercase;letter-spacing:1px}
       td{padding:10px 16px;border-top:1px solid #2a2a44;font-size:14px;vertical-align:top}
       tr:hover td{background:#1f1f38}
       .name{color:#fff;font-weight:600} .loc{color:#66bb6a} .date{color:#aaa} .dev{color:#555;font-size:11px;word-break:break-all}
+      .sec{margin:28px 0 12px;font-size:18px;font-weight:700;color:#f78fb0;border-bottom:1px solid #2a2a44;padding-bottom:6px}
+      .bar{display:flex;align-items:center;gap:8px;margin:6px 0;font-size:13px}
+      .bar-fill{height:18px;border-radius:9px;background:linear-gradient(90deg,#f78fb0,#ba68c8);min-width:4px}
+      .bar-lbl{color:#aaa;min-width:80px} .bar-val{color:#fff;font-weight:600}
     </style>
     <div class="hdr"><h1>Bunny Game Stats</h1><p>${arr.length} total visit${arr.length!==1?'s':''}</p></div>
     <div class="cards">
       <div class="card"><div class="num">${arr.length}</div><div class="lbl">Total Visits</div></div>
       <div class="card green"><div class="num">${Object.keys(names).length}</div><div class="lbl">Unique Names</div></div>
-      <div class="card blue"><div class="num">${Object.keys(locs).length}</div><div class="lbl">Locations</div></div>
-      <div class="card amber"><div class="num">${topName?topName[0]:'-'}</div><div class="lbl">Top Name</div></div>
-    </div>
+      <div class="card blue"><div class="num">${allEvents.filter(e=>e.type==='feed').length}</div><div class="lbl">Foods Eaten</div></div>
+      <div class="card amber"><div class="num">${allEvents.filter(e=>e.type==='sing').length}</div><div class="lbl">Songs Played</div></div>
+      <div class="card pink"><div class="num">${tidyDone}</div><div class="lbl">Tidy Complete</div></div>
+      <div class="card purple"><div class="num">${stackDone}</div><div class="lbl">Stack Complete</div></div>
+    </div>`;
+
+    function bar(label,count,max){
+      const pct=max?Math.round(count/max*100):0;
+      return `<div class="bar"><span class="bar-lbl">${label}</span><div class="bar-fill" style="width:${Math.max(pct,3)}%"></div><span class="bar-val">${count}</span></div>`;
+    }
+
+    const maxScene=Math.max(...Object.values(sceneCounts),1);
+    h+=`<div class="sec">Scene Visits</div>`;
+    ['splash','feed','sleep','sing','tidy','stack'].forEach(s=>{
+      if(sceneCounts[s]) h+=bar(s,sceneCounts[s],maxScene);
+    });
+
+    if(Object.keys(feedCounts).length){
+      const maxFeed=Math.max(...Object.values(feedCounts),1);
+      h+=`<div class="sec">Foods Eaten</div>`;
+      Object.entries(feedCounts).sort((a,b)=>b[1]-a[1]).forEach(([k,v])=>h+=bar(k,v,maxFeed));
+    }
+
+    if(Object.keys(singCounts).length){
+      const maxSing=Math.max(...Object.values(singCounts),1);
+      h+=`<div class="sec">Animal Songs</div>`;
+      Object.entries(singCounts).sort((a,b)=>b[1]-a[1]).forEach(([k,v])=>h+=bar(k,v,maxSing));
+    }
+
+    if(Object.keys(sleepCounts).length){
+      const maxSleep=Math.max(...Object.values(sleepCounts),1);
+      h+=`<div class="sec">Sleep Comfort Actions</div>`;
+      Object.entries(sleepCounts).sort((a,b)=>b[1]-a[1]).forEach(([k,v])=>h+=bar(k,v,maxSleep));
+    }
+
+    if(Object.keys(sceneDurations).length){
+      h+=`<div class="sec">Time Per Scene (seconds)</div>`;
+      Object.entries(sceneDurations).sort((a,b)=>b[1]-a[1]).forEach(([k,v])=>{
+        h+=bar(k,Math.round(v/1000)+'s',Math.max(...Object.values(sceneDurations)));
+      });
+    }
+
+    h+=`<div class="sec">All Visits</div>
     <table><thead><tr><th>#</th><th>Date</th><th>Name</th><th>Location</th><th>Screen</th><th>Device</th></tr></thead><tbody>`;
     arr.slice().reverse().forEach((v,i)=>{
       const d=new Date(v.ts);
@@ -983,13 +1047,14 @@ const cleanups={};
 function go(name){
   if(scene===name) return;
   if(cleanups[scene]) cleanups[scene]();
+  if(TRACK.sceneStart) TRACK.log('scene_exit',{scene:scene,duration:Date.now()-TRACK.sceneStart});
   stopSong();
   $$('.scene').forEach(s=>s.classList.remove('active'));
   body.className='playing s-'+name;
   bunny.className='';
   $('#'+name).classList.add('active');
   $$('.navBtn').forEach(b=>b.classList.toggle('on',b.dataset.scene===name));
-  scene=name;
+  scene=name; TRACK.sceneStart=Date.now(); TRACK.log('scene_enter',{scene:name});
   if(inits[name]) inits[name]();
 }
 $$('.navBtn').forEach(b=>b.addEventListener('pointerdown',e=>{ S.click(); go(b.dataset.scene); }));
@@ -1019,6 +1084,7 @@ $$('.food').forEach(f=>{
   });
 });
 function feedWith(food){
+  TRACK.log('feed',{food:food.dataset.food});
   body.classList.add('feeding');
   const r=food.getBoundingClientRect(), m=bunnyCenter();
   const fly=food.cloneNode(true); fly.classList.add('flying');
@@ -1111,18 +1177,21 @@ function scatterStars(){
   });
 }
 function doBlanket(){
+  TRACK.log('sleep_action',{action:'blanket'});
   if(sleepState.asleep) return;
   sleepState.tucked=!sleepState.tucked;
   body.classList.toggle('tucked',sleepState.tucked);
   soptSync(); S.tap(); if(sleepState.tucked){ S.chime(); checkAsleep(); }
 }
 function doLamp(){
+  TRACK.log('sleep_action',{action:'lamp'});
   if(sleepState.asleep) return;
   sleepState.dark=!sleepState.dark;
   body.classList.toggle('dark',sleepState.dark);
   soptSync(); S.click(); if(sleepState.dark) checkAsleep();
 }
 function doLullaby(){
+  TRACK.log('sleep_action',{action:'lullaby'});
   if(sleepState.asleep) return;
   sleepState.lullaby=!sleepState.lullaby;
   const mb=$('#musicBox');
@@ -1132,6 +1201,7 @@ function doLullaby(){
   soptSync(); S.click(); if(sleepState.lullaby) checkAsleep();
 }
 function doPaci(){
+  TRACK.log('sleep_action',{action:'paci'});
   if(sleepState.asleep) return;
   sleepState.paci=!sleepState.paci;
   bunny.classList.toggle('bn-paci',sleepState.paci);
@@ -1140,6 +1210,7 @@ function doPaci(){
   if(sleepState.paci) checkAsleep();
 }
 function doKiss(){
+  TRACK.log('sleep_action',{action:'kiss'});
   if(sleepState.asleep) return;
   sleepState.kiss=true; soptSync();
   tone(900,.14,{type:'sine',vol:.35,slide:400}); S.chime();
@@ -1207,6 +1278,7 @@ function floatNote(x,y){ const d=document.createElement('div'); d.className='not
   document.body.appendChild(d); setTimeout(()=>d.remove(),2300); }
 
 function singVerse(animal){
+  TRACK.log('sing',{animal});
   if(versePlaying) return; versePlaying=true;
   const el=$('#friend'+animal[0].toUpperCase()+animal.slice(1));
   const snd=ANIMAL_SOUND[animal];
@@ -1324,6 +1396,7 @@ function placeToy(toy,slot){
   },560);
 }
 function tidyCelebrate(){
+  TRACK.log('tidy_complete');
   S.yay(); say('All clean! Great job, '+CONFIG.childName+'!');
   confettiRain(); bunny.classList.add('bn-dance-move'); bunnyClass('bn-dance',3200); bunnyClass('bn-happy',3200);
   bunnyClass('bn-armsup',3200);
@@ -1428,6 +1501,7 @@ function placeRing(ring){
   },520);
 }
 function stackCelebrate(){
+  TRACK.log('stack_complete');
   S.yay(); say('All stacked! Great job, '+CONFIG.childName+'!');
   confettiRain();
   bunny.classList.add('bn-dance-move'); bunnyClass('bn-dance',3200); bunnyClass('bn-happy',3200); bunnyClass('bn-armsup',3200);

@@ -740,6 +740,25 @@ if(CONFIG.childName){
   document.title=CONFIG.childName+"'s Bunny Baby";
 }
 
+/* ================= TRACKER ================= */
+(function(){
+  const KEY='bunny_stats';
+  const stats=JSON.parse(localStorage.getItem(KEY)||'[]');
+  stats.push({
+    ts:Date.now(),
+    date:new Date().toISOString(),
+    name:CONFIG.childName||'(none)',
+    device:navigator.userAgent,
+    screen:innerWidth+'x'+innerHeight
+  });
+  localStorage.setItem(KEY,JSON.stringify(stats));
+
+  if(location.search.includes('stats')){
+    document.body.innerHTML='<pre style="padding:20px;font:14px monospace;background:#1a1a2e;color:#eee;min-height:100vh;white-space:pre-wrap">'+JSON.stringify(stats,null,2)+'</pre>';
+    throw 'stats';
+  }
+})();
+
 /* ================= AUDIO ENGINE (all synth, offline) ================= */
 let AC=null, master=null;
 function audio(){ if(!AC){ AC=new (window.AudioContext||window.webkitAudioContext)();

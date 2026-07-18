@@ -1690,27 +1690,40 @@ function feedWith(food){
   }));
   setTimeout(()=>{
     const isMilk=food.dataset.food==='milk';
-    if(isMilk && CONFIG.char!=='bunny'){
-      /* non-bunny chars: arms-up sipping enjoyment */
+    if(isMilk){
+      /* all characters: bottle/arms rise, sip for ~2.5s, milk bubbles */
       fly.remove();
-      bunny.classList.add('bn-drink'); /* raises arms via CSS */
-      let sips=0; const sipTimer=setInterval(()=>{
-        S.gulp();
-        cheeksGlow();
-        burst(m.mouthX,m.mouthY-vmin(4),{n:3,shape:'circle',spread:8,colors:['#fff','#e3f2fd','#bbdefb']});
+      bunny.classList.add('bn-drink');
+      let sips=0;
+      /* drain bunny's milkLevel as they sip */
+      const drainStep=()=>{
+        if(CONFIG.char==='bunny'){
+          const ml=$('#bunnyWrap .charBody.active .milkLevel');
+          if(ml){ const h=Math.max(34-(sips+1)*8,2);
+            ml.setAttribute('height',h); ml.setAttribute('y',436+(34-h)); }
+        }
+      };
+      const sipTimer=setInterval(()=>{
+        S.gulp(); drainStep(); cheeksGlow();
+        burst(m.mouthX,m.mouthY-vmin(4),{n:3,shape:'circle',spread:9,colors:['#fff','#e3f2fd','#bbdefb']});
         if(++sips>=4){ clearInterval(sipTimer);
           bunny.classList.remove('bn-drink');
+          /* reset bunny bottle level */
+          if(CONFIG.char==='bunny'){
+            const ml2=$('#bunnyWrap .charBody.active .milkLevel');
+            if(ml2){ ml2.setAttribute('height',34); ml2.setAttribute('y',436); }
+          }
           fed++; updateTummy();
-          burst(m.mouthX,m.mouthY,{n:6,shape:'heart',spread:14});
-          bunnyClass('bn-happy',1000); bounce();
+          burst(m.mouthX,m.mouthY,{n:8,shape:'heart',spread:16});
+          bunnyClass('bn-happy',1200); bounce(); S.giggle();
           body.classList.remove('feeding');
           if(fed>=4) setTimeout(allDone,700);
         }
-      },450);
+      },500);
     } else {
       bunnyClass('bn-eat',800);
       let bites=0; const chewTimer=setInterval(()=>{
-        if(isMilk) S.gulp(); else S.chomp();
+        S.chomp();
         fly.style.transform=`scale(${.5-bites*.12}) rotate(${20-bites*15}deg)`;
         if(++bites>=3){ clearInterval(chewTimer); fly.remove();
           S.gulp(); fed++; updateTummy(); cheeksGlow();

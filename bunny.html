@@ -23,6 +23,9 @@
   body.s-tidy  #stage { background:linear-gradient(180deg,#d8f3ff 0%,#c2e9fb 55%,#b0ddf4 100%); }
   body.s-stack #stage { background:linear-gradient(180deg,#eafbe7 0%,#d7f5d0 55%,#c3edc4 100%); }
   body.s-splash #stage { background:linear-gradient(180deg,#ffe4ec 0%,#ffd3e0 60%,#ffc2d4 100%); }
+  body.s-xylo   #stage { background:linear-gradient(180deg,#fff0d6 0%,#ffe2b8 55%,#ffd49e 100%); }
+  body.s-jungle #stage { background:linear-gradient(180deg,#d4f0c8 0%,#b8e3a8 55%,#9cd48c 100%); }
+  body.s-chase  #stage { background:linear-gradient(180deg,#fde8c8 0%,#fbd9a8 55%,#f7c98c 100%); }
 
   .scene { position:absolute; inset:0; opacity:0; pointer-events:none; transition:opacity .5s ease; }
   .scene.active { opacity:1; pointer-events:auto; }
@@ -39,9 +42,15 @@
   body.s-sing   #bunnyWrap { left:50%; top:44%; width:42vmin; height:58.8vmin; }
   body.s-tidy   #bunnyWrap { left:17%; top:60%; width:34vmin; height:47.6vmin; }
   body.s-stack  #bunnyWrap { left:82%; top:62%; width:32vmin; height:44.8vmin; }
+  body.s-xylo   #bunnyWrap { left:16%; top:38%; width:30vmin; height:42vmin; }
+  body.s-jungle #bunnyWrap { left:86%; top:26%; width:22vmin; height:30.8vmin; }
+  body.s-chase  #bunnyWrap { left:12%; top:34%; width:26vmin; height:36.4vmin; }
 
   /* bunny idle breathing */
-  #bunnyBody { animation:breathe 3.4s ease-in-out infinite; transform-origin:200px 460px; }
+  .charBody { animation:breathe 3.4s ease-in-out infinite; transform-origin:200px 460px; }
+  /* on the stage, only the .active character is shown (clones in the picker are unaffected) */
+  #bunnyWrap svg .charBody { display:none; }
+  #bunnyWrap svg .charBody.active { display:block; }
   @keyframes breathe { 0%,100%{transform:scale(1,1)} 50%{transform:scale(1.015,.985)} }
 
   /* eye states */
@@ -89,16 +98,17 @@
   @keyframes bnBounce { 0%{transform:translate(-50%,-52%) scale(1)} 35%{transform:translate(-50%,-56%) scale(1.05,.95)} 70%{transform:translate(-50%,-50%) scale(.97,1.03)} 100%{transform:translate(-50%,-52%) scale(1)} }
   .bn-dance-move { animation:bnDance 1.1s ease-in-out infinite; }
   @keyframes bnDance { 0%,100%{transform:translate(-50%,-52%) rotate(-4deg)} 25%{transform:translate(-50%,-56%) rotate(0deg)} 50%{transform:translate(-50%,-52%) rotate(4deg)} 75%{transform:translate(-50%,-56%) rotate(0deg)} }
-  .bn-sleepy-sway #bunnyBody { animation:sleepBreathe 4.5s ease-in-out infinite; }
+  .bn-sleepy-sway .charBody { animation:sleepBreathe 4.5s ease-in-out infinite; }
   @keyframes sleepBreathe { 0%,100%{transform:scale(1,1)} 50%{transform:scale(1.03,.97)} }
 
   .cheekL,.cheekR { transition:opacity .5s; }
 
   /* ============ NAV ============ */
-  #nav { position:fixed; bottom:max(10px, env(safe-area-inset-bottom)); left:50%; transform:translateX(-50%);
-      display:flex; gap:3.4vmin; z-index:90; opacity:0; pointer-events:none; transition:opacity .5s; }
+  #nav { position:fixed; bottom:max(10px, env(safe-area-inset-bottom)); left:0; right:0;
+      display:flex; gap:2.2vmin; z-index:90; opacity:0; pointer-events:none; transition:opacity .5s;
+      flex-wrap:wrap; justify-content:center; }
   body.playing #nav { opacity:1; pointer-events:auto; }
-  .navBtn { width:16vmin; height:16vmin; max-width:96px; max-height:96px; min-width:64px; min-height:64px;
+  .navBtn { width:13vmin; height:13vmin; max-width:88px; max-height:88px; min-width:52px; min-height:52px;
       border-radius:50%; border:none; background:#fff; cursor:pointer;
       box-shadow:0 5px 0 rgba(0,0,0,.10), 0 8px 18px rgba(0,0,0,.12);
       display:flex; align-items:center; justify-content:center; padding:0;
@@ -109,6 +119,27 @@
   body.s-sleep.dark .navBtn { background:#efe6ff; opacity:.92; }
 
   /* ============ SPLASH ============ */
+  #charPick { position:absolute; left:50%; top:56%; transform:translate(-50%,-50%);
+      display:flex; gap:3vmin; z-index:5; padding:1vmin; }
+  .charCard { position:relative; width:24vmin; height:30vmin; max-width:150px; max-height:188px; border:none;
+      border-radius:26px; padding:1.4vmin 1vmin .8vmin; background:rgba(255,255,255,.72);
+      box-shadow:0 6px 18px rgba(180,90,120,.22); backdrop-filter:blur(3px);
+      display:flex; flex-direction:column; align-items:center; justify-content:space-between;
+      font-family:inherit; cursor:pointer; transition:transform .18s, box-shadow .18s;
+      border:3px solid transparent; }
+  .charCard:active { transform:scale(.94); }
+  .charCard.sel { border-color:#f472a0; background:#fff;
+      box-shadow:0 8px 22px rgba(244,114,160,.4); transform:translateY(-1vmin); }
+  .charThumb { width:100%; flex:1; display:block; overflow:visible;
+      filter:drop-shadow(0 3px 4px rgba(0,0,0,.08)); }
+  .charThumb .charBody { animation:none; }
+  body.s-splash #bunnyWrap { display:none; }
+  .cardName { font-size:3vmin; font-weight:800; color:#c04b6e; margin-top:.4vmin; letter-spacing:.2px; }
+  .charCard.sel .cardName { color:#e0447e; }
+  .charCard.sel::before { content:'✓'; position:absolute; top:-1.4vmin; right:-1.4vmin;
+      width:6vmin; height:6vmin; max-width:34px; max-height:34px; border-radius:50%;
+      background:#f472a0; color:#fff; font-size:3.4vmin; font-weight:900;
+      display:flex; align-items:center; justify-content:center; box-shadow:0 3px 8px rgba(0,0,0,.2); }
   #splash .tapHint { position:absolute; left:50%; top:82%; transform:translateX(-50%);
       width:22vmin; height:22vmin; animation:hintPulse 1.4s ease-in-out infinite; }
   @keyframes hintPulse { 0%,100%{transform:translateX(-50%) scale(1)} 50%{transform:translateX(-50%) scale(1.18)} }
@@ -121,11 +152,11 @@
 
 
   /* ============ FEED SCENE ============ */
-  #tray { position:absolute; left:50%; bottom:16vmin; transform:translateX(-50%);
+  #tray { position:absolute; left:50%; bottom:calc(20vmin + max(10px, env(safe-area-inset-bottom))); transform:translateX(-50%);
       width:min(92vw,86vmin); height:20vmin; background:#fff6ea; border-radius:5vmin;
       box-shadow:0 6px 0 rgba(180,120,60,.18), inset 0 2px 8px rgba(255,255,255,.9);
       display:flex; align-items:center; justify-content:space-evenly; z-index:30; }
-  .food { width:15vmin; height:15vmin; cursor:pointer; transition:transform .2s cubic-bezier(.3,1.6,.5,1);
+  .food { width:11.5vmin; height:11.5vmin; cursor:pointer; transition:transform .2s cubic-bezier(.3,1.6,.5,1);
       display:flex; align-items:center; justify-content:center; position:relative; touch-action:none; }
   .food svg { width:100%; height:100%; overflow:visible; pointer-events:none; }
   .food:active { transform:scale(1.15); }
@@ -256,6 +287,53 @@
   #stackBtn.show { transform:scale(1); animation:hintPulse 1.5s ease-in-out infinite .6s; }
   #stackBtn svg { width:100%; height:100%; }
 
+  /* nav wraps to 2 rows on narrow phones — lift the tray clear of it */
+  @media (max-width:680px){
+    #tray { bottom:calc(12vmin + 128px); }
+    .chasePal { bottom:24%; }
+    #chaseGround { height:34%; }
+    #jungle .friend { bottom:26% !important; }
+  }
+
+  /* ============ XYLOPHONE SCENE ============ */
+  #xyloBox { position:absolute; left:54%; top:48%; transform:translate(-50%,-50%);
+      width:min(72vmin,88vw); z-index:30; }
+  #xyloBox svg { width:100%; height:auto; display:block; overflow:visible; }
+  .xbar, .xkey { cursor:pointer; transition:transform .08s; }
+  .xbar.hit { transform:scale(1.06); filter:brightness(1.35); }
+  .xkey.hit { transform:translateY(4px); filter:brightness(1.25); }
+  #xyloDemo { position:absolute; left:54%; top:12%; transform:translateX(-50%);
+      width:15vmin; height:15vmin; cursor:pointer; z-index:31;
+      animation:starBtnFloat 2.4s ease-in-out infinite; }
+
+  /* ============ JUNGLE SCENE ============ */
+  #jungleGround { position:absolute; left:0; right:0; bottom:0; height:30%;
+      background:linear-gradient(180deg,#7cb567,#5f9a4e); border-radius:50% 50% 0 0 / 16% 16% 0 0; z-index:5; }
+  #jungle .friend { z-index:18; }
+  #friendGaiya  { left:2%;  bottom:20%; width:26vmin; height:32vmin; }
+  #friendLion   { left:32%; bottom:26%; width:28vmin; height:34vmin; }
+  #friendHorse  { right:30%; bottom:20%; width:28vmin; height:34vmin; }
+  #friendMonkey { right:2%; bottom:20%; width:24vmin; height:30vmin; }
+  .jungleLeaf { position:absolute; z-index:6; pointer-events:none; opacity:.85; }
+
+  /* ============ CHASE SCENE ============ */
+  #chaseGround { position:absolute; left:0; right:0; bottom:0; height:26%;
+      background:linear-gradient(180deg,#e8b878,#d4a05e); z-index:5; }
+  .chasePal { position:absolute; z-index:18; width:30vmin; height:38vmin; }
+  .chasePal svg { width:100%; height:100%; overflow:visible; }
+  #chaseBig  { left:8%;  bottom:14%; }
+  #chaseThin { right:8%; bottom:14%; width:22vmin; height:40vmin; }
+  .chasePal.munch { animation:friendBop .4s ease-in-out 2; }
+  .chasePal.dancing { animation:friendSway .55s ease-in-out infinite; }
+  .samosa { position:absolute; width:13vmin; height:13vmin; cursor:pointer; z-index:40;
+      animation:samosaPop .4s cubic-bezier(.3,1.7,.5,1); touch-action:none; }
+  .samosa svg { width:100%; height:100%; pointer-events:none; }
+  .samosa.flying { position:fixed; z-index:60; transition:all .5s cubic-bezier(.4,0,.5,1); pointer-events:none; }
+  @keyframes samosaPop { 0%{transform:scale(0)} 100%{transform:scale(1)} }
+  #chaseCount { position:absolute; top:3.5vmin; right:3.5vmin; z-index:40;
+      font-size:6vmin; font-weight:800; color:#fff; text-shadow:0 3px 0 rgba(160,90,20,.4);
+      background:rgba(255,255,255,.25); border-radius:4vmin; padding:1vmin 3vmin; }
+
   /* ============ PARTICLES ============ */
   .pt { position:fixed; pointer-events:none; z-index:80; will-change:transform,opacity; }
   .pt-pop { animation:ptPop .9s ease-out forwards; }
@@ -285,8 +363,28 @@
         <radialGradient id="gCream" cx="45%" cy="35%" r="75%">
           <stop offset="0%" stop-color="#fffdf6"/><stop offset="100%" stop-color="#f7ecd8"/>
         </radialGradient>
+        <!-- SHIBA gradients -->
+        <radialGradient id="gShiba" cx="42%" cy="30%" r="82%">
+          <stop offset="0%" stop-color="#f2ad63"/><stop offset="62%" stop-color="#e58f38"/>
+          <stop offset="100%" stop-color="#cf7a28"/>
+        </radialGradient>
+        <radialGradient id="gShibaW" cx="45%" cy="35%" r="78%">
+          <stop offset="0%" stop-color="#ffffff"/><stop offset="100%" stop-color="#efe6d9"/>
+        </radialGradient>
+        <!-- DOLL gradients -->
+        <radialGradient id="gSkin" cx="42%" cy="32%" r="82%">
+          <stop offset="0%" stop-color="#ffe0c4"/><stop offset="65%" stop-color="#f6c6a0"/>
+          <stop offset="100%" stop-color="#e7ac83"/>
+        </radialGradient>
+        <radialGradient id="gHair" cx="42%" cy="26%" r="84%">
+          <stop offset="0%" stop-color="#d06a2c"/><stop offset="60%" stop-color="#b85321"/>
+          <stop offset="100%" stop-color="#8f3f18"/>
+        </radialGradient>
+        <linearGradient id="gDress" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#fff2ab"/><stop offset="100%" stop-color="#f5df76"/>
+        </linearGradient>
       </defs>
-      <g id="bunnyBody">
+      <g class="charBody char-bunny" data-char="bunny">
         <!-- ears: close together, near-vertical like the toy -->
         <g class="earL">
           <ellipse cx="160" cy="68" rx="42" ry="84" fill="url(#gBody)" transform="rotate(-6 160 68)"/>
@@ -387,6 +485,164 @@
           <circle cx="200" cy="338" r="9" fill="none" stroke="#ec7fa9" stroke-width="5.5"/>
         </g>
       </g>
+
+      <!-- ============ SHIBA ============ -->
+      <g class="charBody char-shiba" data-char="shiba">
+        <!-- pointed ears -->
+        <g class="earL"><polygon points="150,58 192,150 116,150" fill="url(#gShiba)"/><polygon points="150,86 176,146 130,146" fill="#c96a5a"/></g>
+        <g class="earR"><polygon points="250,58 284,150 208,150" fill="url(#gShiba)"/><polygon points="250,86 270,146 224,146" fill="#c96a5a"/></g>
+        <!-- feet -->
+        <ellipse cx="126" cy="516" rx="52" ry="33" fill="url(#gShiba)"/>
+        <ellipse cx="274" cy="516" rx="52" ry="33" fill="url(#gShiba)"/>
+        <ellipse cx="120" cy="519" rx="31" ry="19" fill="url(#gShibaW)"/>
+        <ellipse cx="280" cy="519" rx="31" ry="19" fill="url(#gShibaW)"/>
+        <!-- body -->
+        <ellipse cx="200" cy="438" rx="94" ry="95" fill="url(#gShiba)"/>
+        <ellipse cx="200" cy="456" rx="60" ry="60" fill="url(#gShibaW)"/>
+        <!-- held bottle -->
+        <g class="heldBottle">
+          <rect x="174" y="428" width="52" height="76" rx="16" fill="#fdf3e3"/>
+          <rect x="174" y="470" width="52" height="34" rx="14" fill="#f6b8bd"/>
+          <rect x="171" y="420" width="58" height="14" rx="7" fill="#fffdf6"/>
+          <path d="M189 420 q-2-18 11-22 q13 4 11 22 z" fill="#f3e3c8"/>
+          <rect class="milkLevel" x="178" y="436" width="44" height="34" rx="8" fill="#fffef9" opacity=".9"/>
+          <text x="200" y="494" text-anchor="middle" font-size="15" font-weight="800" font-family="Comic Sans MS,cursive">
+            <tspan fill="#f06292">b</tspan><tspan fill="#ffb300">a</tspan><tspan fill="#66bb6a">b</tspan><tspan fill="#42a5f5">y</tspan>
+          </text>
+        </g>
+        <!-- arms -->
+        <g class="armL"><ellipse cx="147" cy="437" rx="24" ry="46" fill="url(#gShiba)" transform="rotate(-28 147 437)"/><circle cx="164" cy="470" r="17" fill="url(#gShibaW)"/></g>
+        <g class="armR"><ellipse cx="253" cy="437" rx="24" ry="46" fill="url(#gShiba)" transform="rotate(28 253 437)"/><circle cx="236" cy="470" r="17" fill="url(#gShibaW)"/></g>
+        <!-- head -->
+        <ellipse cx="200" cy="248" rx="120" ry="112" fill="url(#gShiba)"/>
+        <!-- white mask: cheeks + muzzle -->
+        <ellipse cx="120" cy="272" rx="40" ry="52" fill="url(#gShibaW)"/>
+        <ellipse cx="280" cy="272" rx="40" ry="52" fill="url(#gShibaW)"/>
+        <path d="M96 300 Q92 236 200 250 Q308 236 304 300 Q304 352 250 360 Q200 366 150 360 Q96 352 96 300 z" fill="url(#gShibaW)"/>
+        <!-- brow dots -->
+        <ellipse cx="150" cy="204" rx="12" ry="9" fill="#f6efe6" opacity=".9"/>
+        <ellipse cx="250" cy="204" rx="12" ry="9" fill="#f6efe6" opacity=".9"/>
+        <!-- cheeks -->
+        <ellipse class="cheekL" cx="118" cy="298" rx="18" ry="11" fill="#f6a6b0" opacity=".4"/>
+        <ellipse class="cheekR" cx="282" cy="298" rx="18" ry="11" fill="#f6a6b0" opacity=".4"/>
+        <!-- eyes -->
+        <g class="eyesOpen">
+          <g><ellipse cx="150" cy="240" rx="20" ry="26" fill="#2b2018"/><circle cx="144" cy="231" r="6" fill="#fff"/><circle cx="156" cy="250" r="3" fill="#fff" opacity=".8"/></g>
+          <g><ellipse cx="250" cy="240" rx="20" ry="26" fill="#2b2018"/><circle cx="244" cy="231" r="6" fill="#fff"/><circle cx="256" cy="250" r="3" fill="#fff" opacity=".8"/></g>
+        </g>
+        <g class="eyesHappy">
+          <path d="M130 244 q20-22 40 0" stroke="#2b2018" stroke-width="8" fill="none" stroke-linecap="round"/>
+          <path d="M230 244 q20-22 40 0" stroke="#2b2018" stroke-width="8" fill="none" stroke-linecap="round"/>
+        </g>
+        <g class="eyesClosed">
+          <path d="M130 242 q20 16 40 0" stroke="#2b2018" stroke-width="7" fill="none" stroke-linecap="round"/>
+          <path d="M230 242 q20 16 40 0" stroke="#2b2018" stroke-width="7" fill="none" stroke-linecap="round"/>
+        </g>
+        <!-- nose -->
+        <path d="M200 262 q-20 0 -20 12 q0 12 20 16 q20-4 20-16 q0-12 -20-12 z" fill="#241f1d"/>
+        <ellipse cx="192" cy="268" rx="6" ry="3.5" fill="#5a4f49" opacity=".7"/>
+        <!-- mouth states -->
+        <g class="mSmile">
+          <path d="M200 290 l0 8 M200 298 q-16 14 -30 2 M200 298 q16 14 30 2" stroke="#3a2b24" stroke-width="5.5" fill="none" stroke-linecap="round"/>
+          <path d="M188 302 q12 16 24 0 q-3 14 -12 14 q-9 0 -12-14 z" fill="#ef6d84"/>
+        </g>
+        <g class="mOpen"><ellipse cx="200" cy="312" rx="15" ry="16" fill="#8f2c3a"/><ellipse cx="200" cy="320" rx="9" ry="7" fill="#ef6d84"/></g>
+        <g class="mYawn"><ellipse cx="200" cy="314" rx="21" ry="23" fill="#8f2c3a"/><ellipse cx="200" cy="326" rx="12" ry="9" fill="#ef6d84"/></g>
+        <g class="paci"><ellipse cx="200" cy="306" rx="24" ry="16" fill="#f48fb1"/><ellipse cx="200" cy="304" rx="10" ry="7" fill="#fff" opacity=".85"/><circle cx="200" cy="326" r="9" fill="none" stroke="#ec7fa9" stroke-width="5.5"/></g>
+        <!-- collar LET'S PAWTY -->
+        <path d="M118 360 Q200 392 282 360 L282 374 Q200 406 118 374 Z" fill="#3d7bc4"/>
+        <circle cx="200" cy="382" r="8.5" fill="#eaf2fb"/>
+        <circle cx="200" cy="379" r="2.4" fill="#3d7bc4"/><circle cx="195" cy="384" r="2" fill="#3d7bc4"/><circle cx="205" cy="384" r="2" fill="#3d7bc4"/><circle cx="200" cy="388" r="2" fill="#3d7bc4"/>
+        <text x="152" y="379" text-anchor="middle" font-size="10.5" font-weight="800" fill="#eaf2fb" font-family="sans-serif">LET'S</text>
+        <text x="250" y="379" text-anchor="middle" font-size="10.5" font-weight="800" fill="#eaf2fb" font-family="sans-serif">PAWTY</text>
+      </g>
+
+      <!-- ============ DOLL ============ -->
+      <g class="charBody char-doll" data-char="doll">
+        <!-- back hair mass -->
+        <g fill="url(#gHair)">
+          <ellipse cx="200" cy="184" rx="118" ry="98"/>
+          <circle cx="120" cy="150" r="40"/><circle cx="160" cy="120" r="42"/><circle cx="200" cy="108" r="44"/><circle cx="240" cy="120" r="42"/><circle cx="280" cy="150" r="40"/>
+          <circle cx="104" cy="204" r="34"/><circle cx="296" cy="204" r="34"/>
+        </g>
+        <!-- side curls (ears) -->
+        <g class="earL"><circle cx="112" cy="242" r="30" fill="url(#gHair)"/><circle cx="100" cy="266" r="22" fill="url(#gHair)"/></g>
+        <g class="earR"><circle cx="288" cy="242" r="30" fill="url(#gHair)"/><circle cx="300" cy="266" r="22" fill="url(#gHair)"/></g>
+        <!-- legs -->
+        <rect x="150" y="452" width="30" height="50" rx="14" fill="url(#gSkin)"/>
+        <rect x="220" y="452" width="30" height="50" rx="14" fill="url(#gSkin)"/>
+        <!-- socks + shoes -->
+        <rect x="152" y="486" width="30" height="24" rx="6" fill="#fff"/>
+        <rect x="218" y="486" width="30" height="24" rx="6" fill="#fff"/>
+        <ellipse cx="167" cy="520" rx="27" ry="17" fill="#fdfdfd" stroke="#e4e4e4" stroke-width="2"/>
+        <ellipse cx="233" cy="520" rx="27" ry="17" fill="#fdfdfd" stroke="#e4e4e4" stroke-width="2"/>
+        <!-- neck -->
+        <rect x="178" y="330" width="44" height="56" rx="18" fill="url(#gSkin)"/>
+        <!-- dress skirt -->
+        <path d="M116 476 Q200 508 284 476 L262 396 Q200 376 138 396 Z" fill="url(#gDress)"/>
+        <!-- bodice + ruffle collar + puff sleeves -->
+        <path d="M138 398 Q200 378 262 398 L256 358 Q200 342 144 358 Z" fill="url(#gDress)"/>
+        <ellipse cx="150" cy="368" rx="26" ry="20" fill="url(#gDress)"/>
+        <ellipse cx="250" cy="368" rx="26" ry="20" fill="url(#gDress)"/>
+        <path d="M140 362 Q200 346 260 362 Q248 376 200 370 Q152 376 140 362 Z" fill="#fff6c4"/>
+        <!-- clown patch -->
+        <circle cx="200" cy="380" r="13" fill="#fff"/>
+        <circle cx="200" cy="382" r="9" fill="#ffdcc4"/>
+        <circle cx="200" cy="376" r="5.5" fill="#ff5a5a"/><circle cx="193" cy="377" r="4" fill="#ff5a5a"/><circle cx="207" cy="377" r="4" fill="#ff5a5a"/>
+        <circle cx="200" cy="384" r="2.4" fill="#e03b3b"/>
+        <circle cx="196" cy="381" r="1.2" fill="#2b2b2b"/><circle cx="204" cy="381" r="1.2" fill="#2b2b2b"/>
+        <!-- held bottle -->
+        <g class="heldBottle">
+          <rect x="174" y="428" width="52" height="76" rx="16" fill="#fdf3e3"/>
+          <rect x="174" y="470" width="52" height="34" rx="14" fill="#f6b8bd"/>
+          <rect x="171" y="420" width="58" height="14" rx="7" fill="#fffdf6"/>
+          <path d="M189 420 q-2-18 11-22 q13 4 11 22 z" fill="#f3e3c8"/>
+          <rect class="milkLevel" x="178" y="436" width="44" height="34" rx="8" fill="#fffef9" opacity=".9"/>
+          <text x="200" y="494" text-anchor="middle" font-size="15" font-weight="800" font-family="Comic Sans MS,cursive">
+            <tspan fill="#f06292">b</tspan><tspan fill="#ffb300">a</tspan><tspan fill="#66bb6a">b</tspan><tspan fill="#42a5f5">y</tspan>
+          </text>
+        </g>
+        <!-- arms -->
+        <g class="armL"><ellipse cx="147" cy="437" rx="22" ry="44" fill="url(#gSkin)" transform="rotate(-28 147 437)"/><circle cx="162" cy="470" r="15" fill="url(#gSkin)"/></g>
+        <g class="armR"><ellipse cx="253" cy="437" rx="22" ry="44" fill="url(#gSkin)" transform="rotate(28 253 437)"/><circle cx="238" cy="470" r="15" fill="url(#gSkin)"/></g>
+        <!-- head -->
+        <ellipse cx="200" cy="238" rx="104" ry="102" fill="url(#gSkin)"/>
+        <!-- curly fringe -->
+        <g fill="url(#gHair)">
+          <circle cx="138" cy="170" r="30"/><circle cx="176" cy="150" r="30"/><circle cx="214" cy="148" r="30"/><circle cx="252" cy="164" r="30"/><circle cx="278" cy="190" r="26"/><circle cx="122" cy="194" r="26"/>
+        </g>
+        <!-- scribble marks -->
+        <path d="M150 198 l18 -8 M154 204 l16 -6 M158 210 l14 -5" stroke="#6b6b6b" stroke-width="2" fill="none" stroke-linecap="round" opacity=".55"/>
+        <ellipse cx="256" cy="216" rx="5" ry="3" fill="#7a7a7a" opacity=".5"/>
+        <!-- cheeks -->
+        <ellipse class="cheekL" cx="146" cy="258" rx="20" ry="13" fill="#f39ab0" opacity=".5"/>
+        <ellipse class="cheekR" cx="254" cy="258" rx="20" ry="13" fill="#f39ab0" opacity=".5"/>
+        <!-- eyes -->
+        <g class="eyesOpen">
+          <g><ellipse cx="158" cy="238" rx="24" ry="27" fill="#fff"/><circle cx="158" cy="240" r="17" fill="#5b3a24"/><circle cx="158" cy="240" r="8" fill="#1c1008"/><circle cx="152" cy="232" r="5" fill="#fff"/>
+             <path d="M132 226 l-9 -5 M136 219 l-7 -7 M142 214 l-4 -8" stroke="#2b1c12" stroke-width="3" fill="none" stroke-linecap="round"/></g>
+          <g><ellipse cx="242" cy="238" rx="24" ry="27" fill="#fff"/><circle cx="242" cy="240" r="17" fill="#5b3a24"/><circle cx="242" cy="240" r="8" fill="#1c1008"/><circle cx="236" cy="232" r="5" fill="#fff"/>
+             <path d="M268 226 l9 -5 M264 219 l7 -7 M258 214 l4 -8" stroke="#2b1c12" stroke-width="3" fill="none" stroke-linecap="round"/></g>
+        </g>
+        <g class="eyesHappy">
+          <path d="M138 242 q20-20 40 0" stroke="#2b1c12" stroke-width="8" fill="none" stroke-linecap="round"/>
+          <path d="M222 242 q20-20 40 0" stroke="#2b1c12" stroke-width="8" fill="none" stroke-linecap="round"/>
+        </g>
+        <g class="eyesClosed">
+          <path d="M138 240 q20 16 40 0" stroke="#2b1c12" stroke-width="7" fill="none" stroke-linecap="round"/>
+          <path d="M222 240 q20 16 40 0" stroke="#2b1c12" stroke-width="7" fill="none" stroke-linecap="round"/>
+        </g>
+        <!-- nose -->
+        <path d="M200 258 q-5 8 0 12 q5 -4 0 -12z" fill="#e0a583"/>
+        <!-- mouth states -->
+        <g class="mSmile"><path d="M180 286 q20 16 40 0" stroke="#c25b5b" stroke-width="5" fill="none" stroke-linecap="round"/></g>
+        <g class="mOpen"><ellipse cx="200" cy="294" rx="14" ry="14" fill="#a34a52"/><ellipse cx="200" cy="300" rx="8" ry="6" fill="#ef8a94"/></g>
+        <g class="mYawn"><ellipse cx="200" cy="296" rx="19" ry="21" fill="#a34a52"/><ellipse cx="200" cy="308" rx="11" ry="8" fill="#ef8a94"/></g>
+        <g class="paci"><ellipse cx="200" cy="292" rx="22" ry="15" fill="#f48fb1"/><ellipse cx="200" cy="290" rx="9" ry="6" fill="#fff" opacity=".85"/><circle cx="200" cy="310" r="8" fill="none" stroke="#ec7fa9" stroke-width="5"/></g>
+        <!-- leg scribbles -->
+        <path d="M156 470 l14 6 M160 478 l12 5" stroke="#6b6b6b" stroke-width="2" fill="none" stroke-linecap="round" opacity=".5"/>
+        <path d="M228 468 l14 8 M226 476 l16 6 M230 484 l12 5" stroke="#6b6b6b" stroke-width="2" fill="none" stroke-linecap="round" opacity=".5"/>
+      </g>
     </svg>
   </div>
 
@@ -398,6 +654,7 @@
       <circle cx="50" cy="50" r="18" fill="#f78fb0"/>
       <circle cx="50" cy="50" r="44" fill="none" stroke="#fff" stroke-width="4" opacity=".6"/>
     </svg>
+    <div id="charPick"></div>
     <div id="nameHint">Add ?name=YourKid to the URL to personalize!</div>
   </div>
 
@@ -420,8 +677,62 @@
       </div>
       <div class="food" data-food="banana">
         <svg viewBox="0 0 100 100">
-          <path d="M18 30 Q22 74 66 82 Q86 84 90 70 Q88 78 64 72 Q30 62 28 30 Q26 22 18 30z" fill="#ffd54f" stroke="#f9a825" stroke-width="3"/>
-          <rect x="14" y="24" width="10" height="10" rx="3" fill="#8d6e63"/>
+          <path d="M22 80 C18 60 22 34 38 18 Q52 6 68 12 Q84 18 86 36 C88 52 80 68 66 76 Q50 84 36 80 Z" fill="#fdd835" stroke="#f9a825" stroke-width="3"/>
+          <path d="M36 18 C34 10 26 10 24 18" stroke="#5d4037" stroke-width="7" fill="none" stroke-linecap="round"/>
+          <path d="M66 76 C68 84 72 84 74 78" stroke="#795548" stroke-width="5" fill="none" stroke-linecap="round"/>
+          <path d="M30 30 C28 48 30 62 40 72" fill="none" stroke="#fff9c4" stroke-width="4.5" stroke-linecap="round" opacity=".65"/>
+        </svg>
+      </div>
+      <div class="food" data-food="banana">
+        <svg viewBox="0 0 100 100" style="transform:rotate(-12deg)">
+          <path d="M22 80 C18 60 22 34 38 18 Q52 6 68 12 Q84 18 86 36 C88 52 80 68 66 76 Q50 84 36 80 Z" fill="#fdd835" stroke="#f9a825" stroke-width="3"/>
+          <path d="M36 18 C34 10 26 10 24 18" stroke="#5d4037" stroke-width="7" fill="none" stroke-linecap="round"/>
+          <path d="M66 76 C68 84 72 84 74 78" stroke="#795548" stroke-width="5" fill="none" stroke-linecap="round"/>
+          <path d="M30 30 C28 48 30 62 40 72" fill="none" stroke="#fff9c4" stroke-width="4.5" stroke-linecap="round" opacity=".65"/>
+        </svg>
+      </div>
+      <div class="food" data-food="banana">
+        <svg viewBox="0 0 100 100" style="transform:scaleX(-1) rotate(8deg)">
+          <path d="M22 80 C18 60 22 34 38 18 Q52 6 68 12 Q84 18 86 36 C88 52 80 68 66 76 Q50 84 36 80 Z" fill="#fdd835" stroke="#f9a825" stroke-width="3"/>
+          <path d="M36 18 C34 10 26 10 24 18" stroke="#5d4037" stroke-width="7" fill="none" stroke-linecap="round"/>
+          <path d="M66 76 C68 84 72 84 74 78" stroke="#795548" stroke-width="5" fill="none" stroke-linecap="round"/>
+          <path d="M30 30 C28 48 30 62 40 72" fill="none" stroke="#fff9c4" stroke-width="4.5" stroke-linecap="round" opacity=".65"/>
+        </svg>
+      </div>
+      <div class="food" data-food="banana">
+        <svg viewBox="0 0 100 100" style="transform:rotate(14deg) scale(.9)">
+          <path d="M22 80 C18 60 22 34 38 18 Q52 6 68 12 Q84 18 86 36 C88 52 80 68 66 76 Q50 84 36 80 Z" fill="#fdd835" stroke="#f9a825" stroke-width="3"/>
+          <path d="M36 18 C34 10 26 10 24 18" stroke="#5d4037" stroke-width="7" fill="none" stroke-linecap="round"/>
+          <path d="M66 76 C68 84 72 84 74 78" stroke="#795548" stroke-width="5" fill="none" stroke-linecap="round"/>
+          <path d="M30 30 C28 48 30 62 40 72" fill="none" stroke="#fff9c4" stroke-width="4.5" stroke-linecap="round" opacity=".65"/>
+        </svg>
+      </div>
+      <div class="food" data-food="milk">
+        <svg viewBox="0 0 400 500">
+          <defs>
+            <linearGradient id="milkGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stop-color="#FFFFFF"/><stop offset="100%" stop-color="#FFFEEF"/>
+            </linearGradient>
+          </defs>
+          <path d="M 145 200 C 65 200, 65 320, 105 320 C 115 320, 120 300, 120 280 C 120 240, 145 220, 145 200 Z" fill="#7A828A" stroke="#5A6268" stroke-width="2.5" stroke-linejoin="round"/>
+          <path d="M 105 320 C 95 320, 90 300, 95 280 C 100 260, 110 260, 120 280 C 120 300, 115 320, 105 320 Z" fill="#E3B4A8"/>
+          <path d="M 255 200 C 335 200, 335 320, 295 320 C 285 320, 280 300, 280 280 C 280 240, 255 220, 255 200 Z" fill="#7A828A" stroke="#5A6268" stroke-width="2.5" stroke-linejoin="round"/>
+          <path d="M 295 320 C 305 320, 310 300, 305 280 C 300 260, 290 260, 280 280 C 280 300, 285 320, 295 320 Z" fill="#E3B4A8"/>
+          <path d="M 145 195 Q 138 380, 150 420 Q 160 450, 200 450 Q 240 450, 250 420 Q 262 380, 255 195 Z" fill="url(#milkGradient)" stroke="#BDC3C7" stroke-width="3" stroke-linejoin="round"/>
+          <rect x="138" y="165" width="124" height="32" rx="8" fill="#98DBCC" stroke="#7DBCAE" stroke-width="2.5"/>
+          <path d="M 143 165 C 143 95, 257 95, 257 165 Z" fill="#7A828A" stroke="#5A6268" stroke-width="2.5"/>
+          <path d="M 180 110 C 180 110, 200 102, 220 110 L 220 165 L 180 165 Z" fill="#95A5A6"/>
+          <rect x="186" y="122" width="28" height="28" rx="6" fill="#E3B4A8" stroke="#C9978C" stroke-width="1.5"/>
+          <ellipse cx="200" cy="136" rx="8" ry="4" fill="#FADBD8"/>
+          <circle cx="185" cy="315" r="24" fill="#52BE80" stroke="#27AE60" stroke-width="2"/>
+          <circle cx="196" cy="310" r="6" fill="#FFFFFF"/><circle cx="197" cy="310" r="2.5" fill="#000000"/>
+          <polygon points="208,310 216,307 208,316" fill="#F39C12"/>
+          <path d="M 162 315 Q 150 308, 154 300 Q 160 306, 163 312 Z" fill="#27AE60"/>
+          <line x1="178" y1="339" x2="178" y2="346" stroke="#27AE60" stroke-width="2" stroke-linecap="round"/>
+          <line x1="188" y1="339" x2="188" y2="346" stroke="#27AE60" stroke-width="2" stroke-linecap="round"/>
+          <circle cx="226" cy="328" r="12" fill="#E74C3C" stroke="#C0392B" stroke-width="1.5"/>
+          <circle cx="221" cy="325" r="3" fill="#FFFFFF"/><circle cx="221" cy="325" r="1.2" fill="#000000"/>
+          <polygon points="214,326 208,328 214,330" fill="#F39C12"/>
         </svg>
       </div>
       <div class="food" data-food="cookie">
@@ -693,6 +1004,189 @@
     </button>
   </div>
 
+  <!-- ================= XYLOPHONE ================= -->
+  <div class="scene" id="xylo">
+    <svg id="xyloDemo" viewBox="0 0 100 100">
+      <path d="M50 6 L61 36 L94 38 L68 58 L77 90 L50 71 L23 90 L32 58 L6 38 L39 36 z" fill="#ffd54f" stroke="#ffb300" stroke-width="3" stroke-linejoin="round"/>
+      <path d="M38 72 V38 l24-6 v32" stroke="#7a4c00" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      <ellipse cx="33" cy="73" rx="7" ry="5" fill="#7a4c00"/><ellipse cx="57" cy="66" rx="7" ry="5" fill="#7a4c00"/>
+    </svg>
+    <div id="xyloBox">
+      <svg viewBox="0 0 420 300">
+        <!-- red toy body, like the photo -->
+        <path d="M40 40 Q30 20 60 16 Q200 -6 350 22 Q392 30 396 62 Q404 100 400 190 Q398 250 350 268 Q200 296 70 268 Q22 256 18 200 Q12 110 24 66 Q28 48 40 40 z"
+              fill="#e53935" stroke="#b71c1c" stroke-width="6" stroke-linejoin="round"/>
+        <!-- top panel -->
+        <path d="M52 52 Q200 24 348 46 Q368 50 370 70 L372 140 Q372 158 352 160 L68 160 Q48 158 46 140 L44 70 Q44 56 52 52 z" fill="#fdfdfd"/>
+        <!-- bars (tap = high notes) -->
+        <g class="xbar" data-note="C5"><rect x="62"  y="58" width="46" height="98" rx="23" fill="#42a5f5" stroke="#1e88e5" stroke-width="3"/><circle cx="85"  cy="78" r="8" fill="#e3f2fd"/><circle cx="85"  cy="136" r="8" fill="#e3f2fd"/></g>
+        <g class="xbar" data-note="D5"><rect x="122" y="54" width="46" height="102" rx="23" fill="#ffd54f" stroke="#f9a825" stroke-width="3"/><circle cx="145" cy="76" r="8" fill="#fff8e1"/><circle cx="145" cy="136" r="8" fill="#fff8e1"/></g>
+        <g class="xbar" data-note="E5"><rect x="182" y="52" width="46" height="104" rx="23" fill="#ba68c8" stroke="#8e24aa" stroke-width="3"/><circle cx="205" cy="74" r="8" fill="#f3e5f5"/><circle cx="205" cy="136" r="8" fill="#f3e5f5"/></g>
+        <g class="xbar" data-note="G5"><rect x="242" y="56" width="46" height="100" rx="23" fill="#66bb6a" stroke="#388e3c" stroke-width="3"/><circle cx="265" cy="77" r="8" fill="#e8f5e9"/><circle cx="265" cy="136" r="8" fill="#e8f5e9"/></g>
+        <g class="xbar" data-note="A5"><rect x="302" y="62" width="46" height="94" rx="23" fill="#ff8a3d" stroke="#ef6c00" stroke-width="3"/><circle cx="325" cy="82" r="8" fill="#fff3e0"/><circle cx="325" cy="136" r="8" fill="#fff3e0"/></g>
+        <!-- key row recess -->
+        <rect x="52" y="180" width="316" height="76" rx="16" fill="#c62828"/>
+        <!-- keys (tap = low notes) -->
+        <g class="xkey" data-note="C4"><rect x="64"  y="188" width="52" height="60" rx="10" fill="#42a5f5" stroke="#1e88e5" stroke-width="3"/><circle cx="90"  cy="214" r="10" fill="#fff"/></g>
+        <g class="xkey" data-note="D4"><rect x="126" y="188" width="52" height="60" rx="10" fill="#ffd54f" stroke="#f9a825" stroke-width="3"/><circle cx="152" cy="214" r="10" fill="#fff"/></g>
+        <g class="xkey" data-note="E4"><rect x="188" y="188" width="52" height="60" rx="10" fill="#ba68c8" stroke="#8e24aa" stroke-width="3"/><circle cx="214" cy="214" r="10" fill="#fff"/></g>
+        <g class="xkey" data-note="G4"><rect x="250" y="188" width="52" height="60" rx="10" fill="#66bb6a" stroke="#388e3c" stroke-width="3"/><circle cx="276" cy="214" r="10" fill="#fff"/></g>
+        <g class="xkey" data-note="A4"><rect x="312" y="188" width="52" height="60" rx="10" fill="#ff8a3d" stroke="#ef6c00" stroke-width="3"/><circle cx="338" cy="214" r="10" fill="#fff"/></g>
+      </svg>
+    </div>
+  </div>
+
+  <!-- ================= JUNGLE ================= -->
+  <div class="scene" id="jungle">
+    <div id="jungleGround"></div>
+    <div class="friend" id="friendGaiya">
+      <svg viewBox="0 0 200 230">
+        <ellipse cx="100" cy="170" rx="62" ry="52" fill="#fff"/>
+        <path d="M62 150 q20-14 34 2 q-4 26 -22 30 q-16-8 -12-32z" fill="#4a4a52"/>
+        <path d="M136 178 q16-6 20 10 q-2 18 -16 18 q-12-10 -4-28z" fill="#4a4a52"/>
+        <ellipse cx="100" cy="196" rx="24" ry="16" fill="#f8bbd0"/>
+        <circle cx="92" cy="193" r="3" fill="#e57398"/><circle cx="108" cy="193" r="3" fill="#e57398"/>
+        <ellipse cx="30" cy="88" rx="17" ry="10" fill="#fff" transform="rotate(-20 30 88)"/>
+        <ellipse cx="170" cy="88" rx="17" ry="10" fill="#fff" transform="rotate(20 170 88)"/>
+        <path d="M52 58 q-10-22 6-28 q12 2 8 24" fill="#e8c39a"/>
+        <path d="M148 58 q10-22 -6-28 q-12 2 -8 24" fill="#e8c39a"/>
+        <ellipse cx="100" cy="88" rx="58" ry="50" fill="#fff"/>
+        <path d="M52 60 q16-16 32 -2 q-6 22 -24 24 q-14-6 -8-22z" fill="#4a4a52"/>
+        <ellipse cx="100" cy="112" rx="30" ry="20" fill="#f8bbd0"/>
+        <circle cx="90" cy="110" r="4.5" fill="#c2547e"/><circle cx="110" cy="110" r="4.5" fill="#c2547e"/>
+        <circle cx="80" cy="80" r="8" fill="#26232b"/><circle cx="120" cy="80" r="8" fill="#26232b"/>
+        <circle cx="83" cy="77" r="2.6" fill="#fff"/><circle cx="123" cy="77" r="2.6" fill="#fff"/>
+        <ellipse class="fMouth" cx="100" cy="130" rx="7" ry="4" fill="#8e2f47"/>
+      </svg>
+    </div>
+    <div class="friend" id="friendLion">
+      <svg viewBox="0 0 200 230">
+        <ellipse cx="100" cy="176" rx="56" ry="46" fill="#f2b94f"/>
+        <ellipse cx="62" cy="212" rx="18" ry="10" fill="#e8a53d"/><ellipse cx="138" cy="212" rx="18" ry="10" fill="#e8a53d"/>
+        <path d="M150 176 q22-4 20-24 q-2-14-14-12" stroke="#e8941c" stroke-width="8" fill="none" stroke-linecap="round"/>
+        <circle cx="168" cy="138" r="8" fill="#a3641c"/>
+        <!-- mane -->
+        <g fill="#e8941c">
+          <circle cx="100" cy="34" r="24"/><circle cx="62" cy="44" r="22"/><circle cx="138" cy="44" r="22"/>
+          <circle cx="38" cy="76" r="22"/><circle cx="162" cy="76" r="22"/>
+          <circle cx="34" cy="110" r="20"/><circle cx="166" cy="110" r="20"/>
+          <circle cx="52" cy="134" r="20"/><circle cx="148" cy="134" r="20"/>
+        </g>
+        <!-- ears -->
+        <circle cx="56" cy="52" r="13" fill="#f2b94f"/><circle cx="144" cy="52" r="13" fill="#f2b94f"/>
+        <!-- face -->
+        <ellipse cx="100" cy="90" rx="52" ry="48" fill="#f7cf7a"/>
+        <circle cx="82" cy="80" r="7.5" fill="#26232b"/><circle cx="118" cy="80" r="7.5" fill="#26232b"/>
+        <circle cx="84.5" cy="77.5" r="2.4" fill="#fff"/><circle cx="120.5" cy="77.5" r="2.4" fill="#fff"/>
+        <ellipse cx="100" cy="102" rx="18" ry="13" fill="#fde9c4"/>
+        <path d="M100 96 q-7 0 -7 5 q0 5 7 7 q7-2 7-7 q0-5 -7-5z" fill="#7a4a1e"/>
+        <path d="M92 112 q8 6 16 0" stroke="#7a4a1e" stroke-width="3" fill="none" stroke-linecap="round"/>
+        <ellipse class="fMouth" cx="100" cy="120" rx="7" ry="3.5" fill="#8e4a2a"/>
+      </svg>
+    </div>
+    <div class="friend" id="friendHorse">
+      <svg viewBox="0 0 200 240">
+        <!-- body -->
+        <ellipse cx="100" cy="172" rx="64" ry="50" fill="#c8864a"/>
+        <!-- legs -->
+        <rect x="60" y="200" width="15" height="36" rx="7" fill="#c8864a"/>
+        <rect x="82" y="200" width="15" height="36" rx="7" fill="#c8864a"/>
+        <rect x="103" y="200" width="15" height="36" rx="7" fill="#c8864a"/>
+        <rect x="125" y="200" width="15" height="36" rx="7" fill="#c8864a"/>
+        <ellipse cx="67" cy="236" rx="12" ry="5" fill="#4e342e"/>
+        <ellipse cx="89" cy="236" rx="12" ry="5" fill="#4e342e"/>
+        <ellipse cx="110" cy="236" rx="12" ry="5" fill="#4e342e"/>
+        <ellipse cx="132" cy="236" rx="12" ry="5" fill="#4e342e"/>
+        <!-- tail -->
+        <path d="M162 168 Q176 154 178 168 Q182 184 168 194" stroke="#5d4037" stroke-width="8" fill="none" stroke-linecap="round"/>
+        <!-- neck -->
+        <path d="M70 138 Q60 118 64 96 Q68 78 80 70" stroke="#c8864a" stroke-width="28" fill="none" stroke-linecap="round"/>
+        <!-- mane -->
+        <path d="M80 70 Q70 60 66 48 M76 80 Q64 72 60 60 M72 92 Q60 88 56 76" stroke="#5d4037" stroke-width="7" fill="none" stroke-linecap="round"/>
+        <!-- head -->
+        <ellipse cx="94" cy="66" rx="34" ry="30" fill="#c8864a" transform="rotate(-20 94 66)"/>
+        <!-- muzzle -->
+        <ellipse cx="74" cy="70" rx="16" ry="12" fill="#e8a87c"/>
+        <circle cx="70" cy="74" r="3.5" fill="#5d4037"/>
+        <circle cx="79" cy="76" r="3.5" fill="#5d4037"/>
+        <!-- ear -->
+        <polygon points="110,36 104,56 120,56" fill="#c8864a"/>
+        <polygon points="110,42 107,53 117,53" fill="#e8a87c"/>
+        <!-- eye -->
+        <circle cx="98" cy="56" r="7" fill="#26232b"/>
+        <circle cx="100" cy="54" r="2.4" fill="#fff"/>
+        <!-- mouth -->
+        <ellipse class="fMouth" cx="72" cy="82" rx="6" ry="3.5" fill="#8e4a2a"/>
+      </svg>
+    </div>
+    <div class="friend" id="friendMonkey">
+      <svg viewBox="0 0 180 220">
+        <path d="M136 160 q26-6 24-30 q-2-18-16-16" stroke="#8b6239" stroke-width="7" fill="none" stroke-linecap="round"/>
+        <circle cx="146" cy="112" r="7" fill="#6d4c2a"/>
+        <ellipse cx="90" cy="160" rx="50" ry="46" fill="#a0724a"/>
+        <ellipse cx="90" cy="172" rx="30" ry="26" fill="#e8c39a"/>
+        <ellipse cx="52" cy="204" rx="16" ry="8" fill="#8b6239"/><ellipse cx="128" cy="204" rx="16" ry="8" fill="#8b6239"/>
+        <!-- big ears -->
+        <circle cx="34" cy="78" r="20" fill="#a0724a"/><circle cx="146" cy="78" r="20" fill="#a0724a"/>
+        <circle cx="34" cy="78" r="11" fill="#e8c39a"/><circle cx="146" cy="78" r="11" fill="#e8c39a"/>
+        <!-- head -->
+        <ellipse cx="90" cy="80" rx="46" ry="42" fill="#a0724a"/>
+        <path d="M56 66 Q64 38 90 46 Q116 38 124 66 Q124 96 90 104 Q56 96 56 66z" fill="#e8c39a"/>
+        <circle cx="74" cy="70" r="7" fill="#26232b"/><circle cx="106" cy="70" r="7" fill="#26232b"/>
+        <circle cx="76.5" cy="67.5" r="2.2" fill="#fff"/><circle cx="108.5" cy="67.5" r="2.2" fill="#fff"/>
+        <ellipse cx="82" cy="86" rx="3" ry="4" fill="#6d4c2a"/><ellipse cx="98" cy="86" rx="3" ry="4" fill="#6d4c2a"/>
+        <ellipse class="fMouth" cx="90" cy="96" rx="8" ry="3.5" fill="#8e4a3a"/>
+      </svg>
+    </div>
+  </div>
+
+  <!-- ================= CHASE (samosa friends) ================= -->
+  <div class="scene" id="chase">
+    <div id="chaseGround"></div>
+    <div id="chaseCount">🥟 0</div>
+    <div class="chasePal" id="chaseBig">
+      <svg viewBox="0 0 200 260">
+        <!-- big round friend who loves samosas -->
+        <ellipse cx="100" cy="190" rx="66" ry="58" fill="#ef5350"/>
+        <ellipse cx="100" cy="196" rx="44" ry="40" fill="#f9a19a"/>
+        <circle cx="100" cy="182" r="6" fill="#c62828"/><circle cx="100" cy="206" r="6" fill="#c62828"/>
+        <ellipse cx="52" cy="244" rx="20" ry="10" fill="#5d4037"/><ellipse cx="148" cy="244" rx="20" ry="10" fill="#5d4037"/>
+        <g class="armL"><ellipse cx="42" cy="180" rx="15" ry="34" fill="#ef5350" transform="rotate(-24 42 180)"/><circle cx="32" cy="206" r="11" fill="#f2b98c"/></g>
+        <g class="armR"><ellipse cx="158" cy="180" rx="15" ry="34" fill="#ef5350" transform="rotate(24 158 180)"/><circle cx="168" cy="206" r="11" fill="#f2b98c"/></g>
+        <!-- head -->
+        <ellipse cx="100" cy="86" rx="52" ry="48" fill="#f2b98c"/>
+        <path d="M56 58 Q100 30 144 58 Q144 44 100 38 Q56 44 56 58z" fill="#3e2723"/>
+        <circle cx="82" cy="80" r="7" fill="#26232b"/><circle cx="118" cy="80" r="7" fill="#26232b"/>
+        <circle cx="84.5" cy="77.5" r="2.2" fill="#fff"/><circle cx="120.5" cy="77.5" r="2.2" fill="#fff"/>
+        <ellipse cx="100" cy="94" rx="7" ry="5" fill="#d99668"/>
+        <!-- mustache -->
+        <path d="M100 104 q-16-8 -30 2 q10 8 30 2 q20 6 30-2 q-14-10 -30-2z" fill="#3e2723"/>
+        <g class="bigMouth"><ellipse cx="100" cy="118" rx="12" ry="7" fill="#8e2f47"/><ellipse cx="100" cy="121" rx="7" ry="3.5" fill="#f2778c"/></g>
+      </svg>
+    </div>
+    <div class="chasePal" id="chaseThin">
+      <svg viewBox="0 0 140 280">
+        <!-- tall thin friend -->
+        <rect x="48" y="130" width="44" height="94" rx="20" fill="#ffca28"/>
+        <rect x="52" y="210" width="14" height="46" rx="7" fill="#5c6bc0"/>
+        <rect x="74" y="210" width="14" height="46" rx="7" fill="#5c6bc0"/>
+        <ellipse cx="56" cy="262" rx="16" ry="8" fill="#5d4037"/><ellipse cx="86" cy="262" rx="16" ry="8" fill="#5d4037"/>
+        <g class="armL"><ellipse cx="42" cy="160" rx="10" ry="30" fill="#ffca28" transform="rotate(-18 42 160)"/><circle cx="36" cy="184" r="9" fill="#f2b98c"/></g>
+        <g class="armR"><ellipse cx="98" cy="160" rx="10" ry="30" fill="#ffca28" transform="rotate(18 98 160)"/><circle cx="104" cy="184" r="9" fill="#f2b98c"/></g>
+        <!-- head -->
+        <ellipse cx="70" cy="84" rx="40" ry="44" fill="#f2b98c"/>
+        <path d="M34 58 Q70 34 106 58 Q106 46 70 40 Q34 46 34 58z" fill="#3e2723"/>
+        <!-- glasses -->
+        <circle cx="54" cy="80" r="13" fill="#fff" stroke="#37474f" stroke-width="3.5"/>
+        <circle cx="86" cy="80" r="13" fill="#fff" stroke="#37474f" stroke-width="3.5"/>
+        <line x1="67" y1="80" x2="73" y2="80" stroke="#37474f" stroke-width="3.5"/>
+        <circle cx="54" cy="82" r="5" fill="#26232b"/><circle cx="86" cy="82" r="5" fill="#26232b"/>
+        <ellipse cx="70" cy="96" rx="5" ry="4" fill="#d99668"/>
+        <path d="M58 110 q12 10 24 0" stroke="#8e4a3a" stroke-width="4" fill="none" stroke-linecap="round"/>
+      </svg>
+    </div>
+  </div>
+
   <!-- ================= NAV ================= -->
   <div id="nav">
     <button class="navBtn" data-scene="feed" aria-label="Feed">
@@ -714,6 +1208,36 @@
         <path d="M38 72 V28 l34-8 v44" stroke="#f06292" stroke-width="7" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
         <ellipse cx="30" cy="73" rx="11" ry="8" fill="#f06292"/>
         <ellipse cx="64" cy="65" rx="11" ry="8" fill="#f06292"/>
+      </svg>
+    </button>
+    <button class="navBtn" data-scene="xylo" aria-label="Xylophone">
+      <svg viewBox="0 0 100 100">
+        <rect x="10" y="30" width="80" height="46" rx="10" fill="#e53935"/>
+        <rect x="18" y="24" width="12" height="52" rx="6" fill="#42a5f5"/>
+        <rect x="32" y="22" width="12" height="56" rx="6" fill="#ffd54f"/>
+        <rect x="46" y="20" width="12" height="58" rx="6" fill="#ba68c8"/>
+        <rect x="60" y="22" width="12" height="56" rx="6" fill="#66bb6a"/>
+        <rect x="74" y="24" width="12" height="52" rx="6" fill="#ff8a3d"/>
+      </svg>
+    </button>
+    <button class="navBtn" data-scene="jungle" aria-label="Jungle friends">
+      <svg viewBox="0 0 100 100">
+        <g fill="#e8941c">
+          <circle cx="50" cy="22" r="13"/><circle cx="28" cy="30" r="12"/><circle cx="72" cy="30" r="12"/>
+          <circle cx="20" cy="50" r="12"/><circle cx="80" cy="50" r="12"/>
+          <circle cx="28" cy="70" r="12"/><circle cx="72" cy="70" r="12"/><circle cx="50" cy="78" r="12"/>
+        </g>
+        <circle cx="50" cy="50" r="26" fill="#f7cf7a"/>
+        <circle cx="41" cy="45" r="4" fill="#26232b"/><circle cx="59" cy="45" r="4" fill="#26232b"/>
+        <path d="M50 52 q-4 0 -4 3 q0 3 4 4 q4-1 4-4 q0-3 -4-3z" fill="#7a4a1e"/>
+        <path d="M44 62 q6 5 12 0" stroke="#7a4a1e" stroke-width="3" fill="none" stroke-linecap="round"/>
+      </svg>
+    </button>
+    <button class="navBtn" data-scene="chase" aria-label="Samosa chase">
+      <svg viewBox="0 0 100 100">
+        <path d="M50 14 L88 78 Q90 84 82 84 L18 84 Q10 84 12 78 z" fill="#f2b94f" stroke="#d99a2b" stroke-width="4" stroke-linejoin="round"/>
+        <path d="M50 14 L50 84" stroke="#d99a2b" stroke-width="3"/>
+        <circle cx="38" cy="62" r="3.5" fill="#a3641c"/><circle cx="60" cy="56" r="3.5" fill="#a3641c"/><circle cx="50" cy="72" r="3.5" fill="#a3641c"/>
       </svg>
     </button>
     <button class="navBtn" data-scene="tidy" aria-label="Tidy">
@@ -738,11 +1262,46 @@
 <script>
 'use strict';
 /* ================= CONFIG ================= */
-const CONFIG = { childName:(new URLSearchParams(location.search).get('name')||'').slice(0,20) };
-if(CONFIG.childName){
-  document.getElementById('gameTitle').textContent='🌸 '+CONFIG.childName+"'s Bunny 🌸";
-  document.title=CONFIG.childName+"'s Bunny Baby";
+const CHARS={bunny:{emoji:'🐰',label:'Bunny'},shiba:{emoji:'🐕',label:'Shiba'},doll:{emoji:'🧸',label:'Doll'}};
+const _qp=new URLSearchParams(location.search);
+const CONFIG = {
+  childName:(_qp.get('name')||'').slice(0,20),
+  char:(function(){ const c=_qp.get('char')||localStorage.getItem('char')||'bunny'; return CHARS[c]?c:'bunny'; })()
+};
+/* show the chosen character on the stage; switching is live (no reload) */
+function applyChar(c){
+  if(!CHARS[c]) c='bunny';
+  CONFIG.char=c;
+  document.querySelectorAll('#bunnyWrap .charBody').forEach(b=>b.classList.toggle('active', b.dataset.char===c));
+  const t=CHARS[c].label;
+  document.getElementById('gameTitle').textContent = CONFIG.childName ? ('🌸 '+CONFIG.childName+"'s "+t+' 🌸') : ('🌸 '+t+' 🌸');
+  document.title = (CONFIG.childName?CONFIG.childName+"'s ":'')+t+' Baby';
 }
+function selectChar(c){
+  if(!CHARS[c]) return;
+  localStorage.setItem('char',c);
+  const u=new URL(location); u.searchParams.set('char',c); history.replaceState(null,'',u);
+  applyChar(c);
+  document.querySelectorAll('.charCard').forEach(cd=>cd.classList.toggle('sel', cd.dataset.char===c));
+}
+/* build selection cards from the real character art (cloned) */
+(function(){ const p=document.getElementById('charPick'); if(!p) return;
+  const NS='http://www.w3.org/2000/svg';
+  Object.keys(CHARS).forEach(k=>{
+    const src=document.querySelector('#bunnyWrap .char-'+k);
+    const card=document.createElement('button');
+    card.className='charCard'+(k===CONFIG.char?' sel':''); card.dataset.char=k;
+    const svg=document.createElementNS(NS,'svg');
+    svg.setAttribute('viewBox','66 20 268 380'); svg.setAttribute('class','charThumb');
+    if(src){ const g=src.cloneNode(true); g.classList.add('active'); g.style.display='block'; svg.appendChild(g); }
+    card.appendChild(svg);
+    const lb=document.createElement('span'); lb.className='cardName'; lb.textContent=CHARS[k].label;
+    card.appendChild(lb);
+    card.addEventListener('pointerdown',e=>{ e.stopPropagation(); selectChar(k); });
+    p.appendChild(card);
+  });
+})();
+applyChar(CONFIG.char);
 
 /* ================= TRACKER ================= */
 const TRACK={events:[],sceneStart:null,currentScene:null};
@@ -844,6 +1403,8 @@ TRACK.log=function(type,data){ this.events.push({ts:Date.now(),type,...data}); }
       <div class="card amber"><div class="num">${allEvents.filter(e=>e.type==='sing').length}</div><div class="lbl">Songs Played</div></div>
       <div class="card pink"><div class="num">${tidyDone}</div><div class="lbl">Tidy Complete</div></div>
       <div class="card purple"><div class="num">${stackDone}</div><div class="lbl">Stack Complete</div></div>
+      <div class="card amber"><div class="num">${allEvents.filter(e=>e.type==='xylo').length}</div><div class="lbl">Xylo Notes</div></div>
+      <div class="card green"><div class="num">${allEvents.filter(e=>e.type==='chase').length}</div><div class="lbl">Samosas Fed</div></div>
     </div>`;
 
     function bar(label,count,max){
@@ -853,7 +1414,7 @@ TRACK.log=function(type,data){ this.events.push({ts:Date.now(),type,...data}); }
 
     const maxScene=Math.max(...Object.values(sceneCounts),1);
     h+=`<div class="sec">Scene Visits</div>`;
-    ['splash','feed','sleep','sing','tidy','stack'].forEach(s=>{
+    ['splash','feed','sleep','sing','jungle','xylo','chase','tidy','stack'].forEach(s=>{
       if(sceneCounts[s]) h+=bar(s,sceneCounts[s],maxScene);
     });
 
@@ -911,7 +1472,7 @@ function tone(freq,dur,{type='sine',vol=.5,at=0,slide=null,vib=0}={}){
   o.connect(g); g.connect(master); o.start(t); o.stop(t+dur+.05);
 }
 const NOTE={C3:130.8,D3:146.8,E3:164.8,F3:174.6,G3:196,A3:220,B3:246.9,
-  C4:261.6,D4:293.7,E4:329.6,F4:349.2,G4:392,A4:440,B4:493.9,C5:523.3,D5:587.3,E5:659.3,G5:784};
+  C4:261.6,D4:293.7,E4:329.6,F4:349.2,G4:392,A4:440,B4:493.9,C5:523.3,D5:587.3,E5:659.3,G5:784,A5:880};
 const S={
   tap(){ tone(660,.09,{type:'triangle',vol:.35}); },
   giggle(){ [520,700,920].forEach((f,i)=>tone(f,.12,{type:'triangle',vol:.4,at:i*.09})); },
@@ -935,6 +1496,9 @@ const S={
   snoreIn(){ tone(120,.6,{type:'sawtooth',vol:.12,slide:160,vib:6}); },
   snoreOut(){ tone(160,.5,{type:'sine',vol:.1,slide:110}); },
   birds(){ [1800,2200,1900,2400].forEach((f,i)=>tone(f,.09,{vol:.15,at:i*.13,slide:f*1.3})); },
+  roar(){ tone(120,.8,{type:'sawtooth',vol:.45,slide:70,vib:10}); tone(60,.8,{type:'sine',vol:.3,slide:45}); },
+  ooh(){ [500,700,520,720].forEach((f,i)=>tone(f,.12,{type:'square',vol:.22,at:i*.14,slide:f*1.5})); },
+  neigh(){ tone(700,.18,{type:'sawtooth',vol:.32,slide:1400}); tone(500,.2,{type:'sawtooth',vol:.25,slide:900,at:.2}); tone(350,.25,{type:'sawtooth',vol:.2,slide:600,at:.42}); },
 };
 /* melody player */
 let songTimer=[], songPlaying=false;
@@ -965,10 +1529,17 @@ const TUNE_TWINKLE=[['C4',1],['C4',1],['G4',1],['G4',1],['A4',1],['A4',1],['G4',
   ['G4',1],['G4',1],['F4',1],['F4',1],['E4',1],['E4',1],['D4',2],
   ['C4',1],['C4',1],['G4',1],['G4',1],['A4',1],['A4',1],['G4',2],
   ['F4',1],['F4',1],['E4',1],['E4',1],['D4',1],['D4',1],['C4',2]];
-const TUNE_LULLABY=[['E4',1],['E4',1],['G4',2],['E4',1],['E4',1],['G4',2],
-  ['E4',1],['G4',1],['C5',2],['B4',2],['A4',1],['A4',1],['G4',2],
-  ['D4',1],['E4',1],['F4',2],['D4',1],['D4',1],['E4',1],['F4',2],
-  ['D4',1],['F4',1],['B4',2],['A4',2],['G4',1],['B4',1],['C5',3],[null,2]];
+/* Brahms Lullaby (Guten Abend gut Nacht) */
+const TUNE_LULLABY=[
+  ['G3',1],['C4',1.5],['E4',.5],['G4',1.5],['F4',.5],
+  ['E4',1.5],['C4',.5],['G3',2],[null,.5],
+  ['G3',1],['D4',1.5],['F4',.5],['E4',1.5],['D4',.5],
+  ['C4',2],[null,1],
+  ['G3',1],['E4',1.5],['G4',.5],['A4',1.5],['G4',.5],
+  ['F4',1.5],['D4',.5],['F4',2],[null,.5],
+  ['E4',1.5],['C4',.5],['E4',1.5],['D4',.5],
+  ['C4',3],[null,2]
+];
 const TUNE_MARY=[['E4',1],['D4',1],['C4',1],['D4',1],['E4',1],['E4',1],['E4',2],
   ['D4',1],['D4',1],['D4',2],['E4',1],['G4',1],['G4',2],
   ['E4',1],['D4',1],['C4',1],['D4',1],['E4',1],['E4',1],['E4',1],['E4',1],
@@ -993,9 +1564,48 @@ const TUNE_OWL=[['E4',1],['G4',1],['A4',1],['G4',1],['E4',1],['G4',1],['A4',1],[
   ['E4',1],['G4',1],['A4',1],['G4',1],['E4',1],['G4',1],['A4',2],
   ['G4',1],['A4',1],['B4',1],['A4',1],['G4',1],['A4',1],['B4',1],['A4',1],
   ['G4',1],['A4',1],['B4',1],['A4',1],['G4',1],['A4',1],['G4',2]];
-const ANIMAL_TUNE={cow:TUNE_OLDMAC,duck:TUNE_MARY,sheep:TUNE_ROW,cat:TUNE_BAA,dog:TUNE_HAPPY,frog:TUNE_FROG,owl:TUNE_OWL};
+/* Gaiyya Mere Gaiyya — Indian nursery rhyme */
+const TUNE_GAIYA=[
+  ['G4',1],['E4',1],['G4',1],['E4',1],['G4',1],['A4',2],
+  ['G4',1],['E4',1],['D4',1],['C4',2],[null,1],
+  ['C4',1],['D4',1],['E4',1],['G4',1],['E4',1],['D4',2],
+  ['G4',1],['A4',1],['G4',1],['E4',2],[null,1],
+  ['E4',1],['G4',1],['E4',1],['D4',1],['C4',3]
+];
+/* Sher Aaya — lion roar chant */
+const TUNE_LION=[
+  ['C4',2],['E4',1],['G4',2],['G4',1],['A4',1],['G4',1],['E4',2],
+  ['C4',1],['D4',1],['E4',1],['G4',2],['A4',1],['G4',2],[null,1],
+  ['E4',2],['G4',1],['C5',2],['B4',1],['A4',1],['G4',3]
+];
+/* Bandar Mama Pahan Pajama */
+const TUNE_MONKEY=[
+  ['D4',1],['E4',1],['G4',1],['G4',1],['E4',1],['D4',1],['E4',1],['G4',2],
+  ['A4',1],['G4',1],['E4',1],['D4',1],['C4',2],[null,1],
+  ['D4',1],['E4',1],['G4',1],['A4',1],['G4',1],['F4',1],['E4',1],['D4',1],
+  ['C4',1],['E4',1],['G4',2],['E4',1],['D4',1],['C4',3]
+];
+/* Lakdi ki Kathi — horse song */
+const TUNE_LAKRI=[
+  ['C4',1],['C4',1],['D4',1],['E4',1],['D4',1],['C4',1],
+  ['E4',1],['E4',1],['F4',1],['G4',1],['F4',1],['E4',1],
+  ['G4',1.5],['G4',.5],['A4',1],['B4',2],[null,.5],
+  ['B4',1],['A4',1],['G4',2],[null,.5],
+  ['E4',1],['D4',1],['E4',1],['F4',1],['E4',1],['D4',1],
+  ['G4',1],['F4',1],['E4',1],['D4',1],['C4',3]
+];
+/* Mota Patla — Gujarati children's chant for chase scene */
+const TUNE_MOTO=[
+  ['G4',1],['G4',1],['E4',1],['G4',1],['A4',1],['A4',1],['G4',1],['A4',1],
+  ['E4',1],['E4',1],['D4',1],['E4',1],['G4',3],[null,1],
+  ['A4',1],['G4',1],['E4',1],['D4',1],['C4',1],['D4',1],['E4',2],
+  ['D4',1],['E4',1],['G4',1],['E4',1],['D4',1],['C4',3]
+];
+const ANIMAL_TUNE={cow:TUNE_OLDMAC,duck:TUNE_MARY,sheep:TUNE_ROW,cat:TUNE_BAA,dog:TUNE_HAPPY,frog:TUNE_FROG,owl:TUNE_OWL,
+  gaiya:TUNE_GAIYA,lion:TUNE_LION,monkey:TUNE_MONKEY,horse:TUNE_LAKRI};
 const ANIMAL_STYLE={cow:{bpm:132,type:'triangle'},duck:{bpm:126,type:'sine'},sheep:{bpm:100,type:'triangle'},
-  cat:{bpm:118,type:'sine'},dog:{bpm:140,type:'square'},frog:{bpm:110,type:'sine'},owl:{bpm:96,type:'sine'}};
+  cat:{bpm:118,type:'sine'},dog:{bpm:140,type:'square'},frog:{bpm:110,type:'sine'},owl:{bpm:96,type:'sine'},
+  gaiya:{bpm:108,type:'triangle'},lion:{bpm:88,type:'triangle'},monkey:{bpm:144,type:'square'},horse:{bpm:136,type:'triangle'}};
 
 /* optional gentle voice */
 function say(txt){ try{ if(!window.speechSynthesis) return;
@@ -1095,8 +1705,10 @@ function feedWith(food){
     fly.style.transform='scale(.6) rotate(20deg)';
   }));
   setTimeout(()=>{ bunnyClass('bn-eat',800);
+    const isMilk=food.dataset.food==='milk';
     let bites=0; const chewTimer=setInterval(()=>{
-      S.chomp(); fly.style.transform=`scale(${.5-bites*.12}) rotate(${20-bites*15}deg)`;
+      if(isMilk) S.gulp(); else S.chomp();
+      fly.style.transform=`scale(${.5-bites*.12}) rotate(${20-bites*15}deg)`;
       if(++bites>=3){ clearInterval(chewTimer); fly.remove();
         S.gulp(); fed++; updateTummy(); cheeksGlow();
         burst(m.mouthX,m.mouthY,{n:6,shape:'heart',spread:12});
@@ -1128,11 +1740,11 @@ bunny.addEventListener('pointerdown',e=>{
     body.classList.add('feeding'); S.tap();
     bunny.classList.add('bn-drink');
     let g=0; const gl=setInterval(()=>{ S.gulp();
-      const milk=$('.milkLevel'); const h=34-(g+1)*10;
+      const milk=$('#bunnyWrap .charBody.active .milkLevel'); const h=34-(g+1)*10;
       milk.setAttribute('height',Math.max(h,2)); milk.setAttribute('y',436+(34-Math.max(h,2)));
       if(++g>=3){ clearInterval(gl);
         setTimeout(()=>{ bunny.classList.remove('bn-drink');
-          const milk2=$('.milkLevel'); milk2.setAttribute('height',34); milk2.setAttribute('y',436);
+          const milk2=$('#bunnyWrap .charBody.active .milkLevel'); milk2.setAttribute('height',34); milk2.setAttribute('y',436);
           bunnyClass('bn-happy',900); bounce(); S.giggle();
           const m=bunnyCenter(); burst(m.x,m.y-vmin(8),{n:8,shape:'heart',spread:16});
           body.classList.remove('feeding');
@@ -1145,7 +1757,12 @@ bunny.addEventListener('pointerdown',e=>{
 });
 
 /* ================= SLEEP ================= */
-let sleepState, snoreTimer=null, zzzTimer=null;
+let sleepState, snoreTimer=null, zzzTimer=null, yawnTimer=null;
+function doYawnHint(){
+  if(sleepState&&!sleepState.asleep&&scene==='sleep'){
+    bunnyClass('bn-yawn',1200); S.yawn();
+  }
+}
 inits.sleep=()=>{
   sleepState={tucked:false,dark:false,lullaby:false,paci:false,kiss:false,asleep:false};
   body.classList.remove('tucked','dark','asleep');
@@ -1153,8 +1770,10 @@ inits.sleep=()=>{
   $$('#sleepOpts .sopt').forEach(b=>b.classList.remove('on'));
   $('#musicBox').classList.remove('spinning');
   scatterStars();
+  setTimeout(doYawnHint,1800);
+  yawnTimer=setInterval(doYawnHint,6000);
 };
-cleanups.sleep=()=>{ clearInterval(snoreTimer); clearInterval(zzzTimer);
+cleanups.sleep=()=>{ clearInterval(snoreTimer); clearInterval(zzzTimer); clearInterval(yawnTimer);
   body.classList.remove('tucked','dark','asleep'); bunny.classList.remove('bn-paci');
   $$('.nightStar').forEach(s=>s.remove());
   $('#musicBox').classList.remove('spinning'); };
@@ -1271,7 +1890,8 @@ inits.sing=()=>{ versePlaying=false;
 cleanups.sing=()=>{ $$('.friend').forEach(f=>f.classList.remove('swaying','bopping','singing'));
   bunny.classList.remove('bn-dance-move','bn-dance'); };
 
-const ANIMAL_SOUND={cow:'moo',duck:'quack',sheep:'baa',cat:'meow',dog:'woof',frog:'ribbit',owl:'hoot'};
+const ANIMAL_SOUND={cow:'moo',duck:'quack',sheep:'baa',cat:'meow',dog:'woof',frog:'ribbit',owl:'hoot',
+  gaiya:'moo',lion:'roar',monkey:'ooh',horse:'neigh'};
 function floatNote(x,y){ const d=document.createElement('div'); d.className='noteFloat';
   d.innerHTML=PT_SHAPES.note.replaceAll('COL',PALETTE[Math.floor(Math.random()*PALETTE.length)]);
   d.style.left=x+'px'; d.style.top=y+'px';
@@ -1318,6 +1938,94 @@ $('#starSongBtn').addEventListener('pointerdown',()=>{
         {n:2,shape:'star',spread:6,colors:['#ffd54f','#fff']}); } },
     onEnd:()=>{ S.yay(); confettiRain(); endVerse(null); }});
 });
+
+/* ================= JUNGLE ================= */
+inits.jungle=()=>{ $$('#jungle .friend').forEach(f=>f.classList.add('swaying')); };
+cleanups.jungle=()=>{ $$('#jungle .friend').forEach(f=>f.classList.remove('swaying','bopping','singing'));
+  bunny.classList.remove('bn-dance-move','bn-dance'); };
+$('#friendGaiya').addEventListener('pointerdown',()=>{ if(versePlaying){S.moo();return;} S.moo(); setTimeout(()=>singVerse('gaiya'),550); });
+$('#friendLion').addEventListener('pointerdown',()=>{ if(versePlaying){S.roar();return;} S.roar(); setTimeout(()=>singVerse('lion'),850); });
+$('#friendHorse').addEventListener('pointerdown',()=>{ if(versePlaying){S.neigh();return;} S.neigh(); setTimeout(()=>singVerse('horse'),600); });
+$('#friendMonkey').addEventListener('pointerdown',()=>{ if(versePlaying){S.ooh();return;} S.ooh(); setTimeout(()=>singVerse('monkey'),650); });
+
+/* ================= XYLOPHONE ================= */
+inits.xylo=()=>{};
+cleanups.xylo=()=>{};
+function xyloHit(el){
+  const n=el.dataset.note;
+  tone(NOTE[n],.65,{type:'sine',vol:.5});
+  tone(NOTE[n]*3,.14,{type:'triangle',vol:.12}); /* bright overtone = toy-xylophone timbre */
+  el.classList.add('hit'); setTimeout(()=>el.classList.remove('hit'),160);
+  const r=el.getBoundingClientRect();
+  burst(r.left+r.width/2,r.top,{n:3,shape:'star',spread:7});
+  TRACK.log('xylo',{note:n});
+}
+$$('#xylo [data-note]').forEach(el=>el.addEventListener('pointerdown',e=>{ e.preventDefault(); xyloHit(el); }));
+$('#xyloDemo').addEventListener('pointerdown',()=>{
+  S.chime();
+  bunny.classList.add('bn-dance-move'); bunnyClass('bn-dance',24000);
+  playSong(TUNE_TWINKLE,{bpm:112,type:'sine',vol:.4,
+    onBeat:n=>{ if(!n) return;
+      const el=$(`#xylo .xbar[data-note="${n[0]}5"]`)||$(`#xylo .xkey[data-note="${n}"]`);
+      if(el){ el.classList.add('hit'); setTimeout(()=>el.classList.remove('hit'),200); } },
+    onEnd:()=>{ S.yay(); confettiRain(); bunny.classList.remove('bn-dance-move'); }});
+});
+
+/* ================= CHASE (samosa friends) ================= */
+let samosaCount=0, samosaTimer=null;
+const SAMOSA_SVG=`<svg viewBox="0 0 100 100">
+  <path d="M50 12 L90 80 Q92 86 84 86 L16 86 Q8 86 10 80 z" fill="#f2b94f" stroke="#d99a2b" stroke-width="4" stroke-linejoin="round"/>
+  <path d="M50 12 L50 86" stroke="#d99a2b" stroke-width="3"/>
+  <circle cx="36" cy="62" r="4" fill="#a3641c"/><circle cx="62" cy="56" r="4" fill="#a3641c"/><circle cx="50" cy="74" r="4" fill="#a3641c"/>
+</svg>`;
+function updateChaseCount(){ $('#chaseCount').textContent='🥟 '+samosaCount; }
+function spawnSamosa(){
+  if(scene!=='chase' || $$('#chase .samosa').length>=3) return;
+  const d=document.createElement('div'); d.className='samosa';
+  d.style.left=(12+Math.random()*66)+'%';
+  d.style.top=(14+Math.random()*44)+'%';
+  d.innerHTML=SAMOSA_SVG;
+  d.addEventListener('pointerdown',e=>{ e.preventDefault(); eatSamosa(d,e); });
+  $('#chase').appendChild(d);
+  S.pop();
+}
+function eatSamosa(d,e){
+  if(d.classList.contains('flying')) return;
+  S.tap();
+  const big=$('#chaseBig'), br=big.getBoundingClientRect(), r=d.getBoundingClientRect();
+  d.classList.add('flying');
+  d.style.cssText+=`left:${r.left}px;top:${r.top}px;width:${r.width}px;height:${r.height}px;`;
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{
+    d.style.left=(br.left+br.width*.5-r.width*.3)+'px';
+    d.style.top=(br.top+br.height*.42)+'px';
+    d.style.transform='scale(.4) rotate(30deg)';
+  }));
+  setTimeout(()=>{
+    d.remove();
+    big.classList.add('munch'); setTimeout(()=>big.classList.remove('munch'),850);
+    S.chomp(); setTimeout(()=>S.chomp(),200); setTimeout(()=>S.giggle(),450);
+    burst(br.left+br.width/2,br.top+br.height*.45,{n:5,shape:'circle',spread:9,colors:['#f2b94f','#ffd54f']});
+    samosaCount++; updateChaseCount();
+    TRACK.log('chase',{samosas:samosaCount});
+    if(samosaCount%5===0){
+      S.yay(); confettiRain();
+      $$('.chasePal').forEach(p=>p.classList.add('dancing'));
+      bunny.classList.add('bn-dance-move'); bunnyClass('bn-dance',2600);
+      setTimeout(()=>{ $$('.chasePal').forEach(p=>p.classList.remove('dancing'));
+        bunny.classList.remove('bn-dance-move'); },2600);
+    }
+  },520);
+}
+inits.chase=()=>{
+  samosaCount=0; updateChaseCount();
+  playSong(TUNE_MOTO,{bpm:152,type:'triangle',vol:.18,loop:true});
+  spawnSamosa(); samosaTimer=setInterval(spawnSamosa,1500);
+};
+cleanups.chase=()=>{
+  clearInterval(samosaTimer);
+  $$('#chase .samosa').forEach(s=>s.remove());
+  $$('.chasePal').forEach(p=>p.classList.remove('dancing','munch'));
+};
 
 /* ================= TIDY ================= */
 const TIDY_ITEMS=[
@@ -1520,6 +2228,14 @@ $('#stackBtn').addEventListener('pointerdown',()=>{
 });
 
 /* keep placed rings pinned on resize/rotate (bottom/left:38% already relative, no-op needed) */
+
+/* fullscreen */
+function goFullscreen(){
+  const el=document.documentElement;
+  if(el.requestFullscreen) el.requestFullscreen().catch(()=>{});
+  else if(el.webkitRequestFullscreen) el.webkitRequestFullscreen();
+}
+document.addEventListener('pointerdown',()=>{ if(!document.fullscreenElement) goFullscreen(); },{capture:true,passive:true});
 
 /* block context menu / double-tap zoom */
 document.addEventListener('contextmenu',e=>e.preventDefault());

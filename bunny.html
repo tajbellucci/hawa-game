@@ -1691,35 +1691,39 @@ function feedWith(food){
   setTimeout(()=>{
     const isMilk=food.dataset.food==='milk';
     if(isMilk){
-      /* all characters: bottle/arms rise, sip for ~2.5s, milk bubbles */
-      fly.remove();
+      /* all characters: long milk drinking animation ~5s */
       bunny.classList.add('bn-drink');
-      let sips=0;
-      /* drain bunny's milkLevel as they sip */
+      /* bunny uses heldBottle visual; non-bunny keep fly at mouth */
+      if(CONFIG.char==='bunny'){ fly.remove(); }
+      else {
+        fly.style.transition='transform .35s ease';
+        fly.style.transform='scale(.55) rotate(-40deg)';
+      }
+      let sips=0; const TOTAL_SIPS=8;
       const drainStep=()=>{
         if(CONFIG.char==='bunny'){
           const ml=$('#bunnyWrap .charBody.active .milkLevel');
-          if(ml){ const h=Math.max(34-(sips+1)*8,2);
+          if(ml){ const h=Math.max(34-Math.round((sips+1)*(32/TOTAL_SIPS)),2);
             ml.setAttribute('height',h); ml.setAttribute('y',436+(34-h)); }
         }
       };
       const sipTimer=setInterval(()=>{
         S.gulp(); drainStep(); cheeksGlow();
-        burst(m.mouthX,m.mouthY-vmin(4),{n:3,shape:'circle',spread:9,colors:['#fff','#e3f2fd','#bbdefb']});
-        if(++sips>=4){ clearInterval(sipTimer);
+        burst(m.mouthX,m.mouthY-vmin(3),{n:4,shape:'circle',spread:10,colors:['#fff','#e3f2fd','#b3e5fc','#e1f5fe']});
+        if(++sips>=TOTAL_SIPS){ clearInterval(sipTimer);
+          if(CONFIG.char!=='bunny') fly.remove();
           bunny.classList.remove('bn-drink');
-          /* reset bunny bottle level */
           if(CONFIG.char==='bunny'){
             const ml2=$('#bunnyWrap .charBody.active .milkLevel');
             if(ml2){ ml2.setAttribute('height',34); ml2.setAttribute('y',436); }
           }
           fed++; updateTummy();
-          burst(m.mouthX,m.mouthY,{n:8,shape:'heart',spread:16});
-          bunnyClass('bn-happy',1200); bounce(); S.giggle();
+          burst(m.mouthX,m.mouthY,{n:10,shape:'heart',spread:18});
+          bunnyClass('bn-happy',1400); bounce(); S.giggle();
           body.classList.remove('feeding');
           if(fed>=4) setTimeout(allDone,700);
         }
-      },500);
+      },600);
     } else {
       bunnyClass('bn-eat',800);
       let bites=0; const chewTimer=setInterval(()=>{

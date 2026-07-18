@@ -1269,25 +1269,16 @@ function selectChar(c){
   document.querySelectorAll('.charCard').forEach(cd=>cd.classList.toggle('sel', cd.dataset.char===c));
 }
 /* build selection cards from the real character art (cloned) */
-/* photo thumbnails where available, SVG clone fallback for bunny */
-const CHAR_PHOTO={shiba:'shiba.png',doll:'doll.png'};
 (function(){ const p=document.getElementById('charPick'); if(!p) return;
   const NS='http://www.w3.org/2000/svg';
   Object.keys(CHARS).forEach(k=>{
+    const src=document.querySelector('#bunnyWrap .char-'+k);
     const card=document.createElement('button');
     card.className='charCard'+(k===CONFIG.char?' sel':''); card.dataset.char=k;
-    if(CHAR_PHOTO[k]){
-      const img=document.createElement('img');
-      img.src=CHAR_PHOTO[k]; img.className='charThumb';
-      img.style.cssText='width:100%;flex:1;object-fit:cover;border-radius:14px;display:block;';
-      card.appendChild(img);
-    } else {
-      const src=document.querySelector('#bunnyWrap .char-'+k);
-      const svg=document.createElementNS(NS,'svg');
-      svg.setAttribute('viewBox','66 20 268 380'); svg.setAttribute('class','charThumb');
-      if(src){ const g=src.cloneNode(true); g.classList.add('active'); g.style.display='block'; svg.appendChild(g); }
-      card.appendChild(svg);
-    }
+    const svg=document.createElementNS(NS,'svg');
+    svg.setAttribute('viewBox','66 20 268 380'); svg.setAttribute('class','charThumb');
+    if(src){ const g=src.cloneNode(true); g.classList.add('active'); g.style.display='block'; svg.appendChild(g); }
+    card.appendChild(svg);
     const lb=document.createElement('span'); lb.className='cardName'; lb.textContent=CHARS[k].label;
     card.appendChild(lb);
     card.addEventListener('pointerdown',e=>{ e.stopPropagation(); selectChar(k); });
@@ -1828,7 +1819,7 @@ function doLullaby(){
   sleepState.lullaby=!sleepState.lullaby;
   const mb=$('#musicBox');
   if(sleepState.lullaby){ mb.classList.add('spinning');
-    playSong(TUNE_LULLABY,{bpm:76,type:'sine',vol:.22,loop:true}); }
+    playSong(TUNE_LULLABY,{bpm:76,type:'sine',vol:.55,loop:true}); }
   else { mb.classList.remove('spinning'); stopSong(); }
   soptSync(); S.click(); if(sleepState.lullaby) checkAsleep();
 }
@@ -1921,7 +1912,7 @@ function singVerse(animal){
   bunny.classList.add('bn-dance-move'); bunnyClass('bn-dance',20000); bunnyClass('bn-armsup',0);
   bunny.classList.add('bn-armsup');
   const r=el.getBoundingClientRect();
-  playSong(ANIMAL_TUNE[animal],{...ANIMAL_STYLE[animal],vol:.36,
+  playSong(ANIMAL_TUNE[animal],{...ANIMAL_STYLE[animal],vol:.72,
     onBeat:n=>{ if(n&&Math.random()<.5) floatNote(r.left+r.width*Math.random(), r.top); },
     onEnd:()=>{
       S[snd](); setTimeout(()=>S[snd](),650);
@@ -1945,7 +1936,7 @@ $('#starSongBtn').addEventListener('pointerdown',()=>{
   S.chime();
   $$('.friend').forEach(f=>{ f.classList.remove('swaying'); f.classList.add('bopping','singing'); });
   bunny.classList.add('bn-dance-move','bn-armsup'); bunnyClass('bn-dance',26000);
-  playSong(TUNE_TWINKLE,{bpm:120,type:'sine',vol:.34,
+  playSong(TUNE_TWINKLE,{bpm:120,type:'sine',vol:.68,
     onBeat:n=>{ if(n&&Math.random()<.45){
       burst(Math.random()*innerWidth,Math.random()*innerHeight*.4,
         {n:2,shape:'star',spread:6,colors:['#ffd54f','#fff']}); } },
@@ -1977,7 +1968,7 @@ $$('#xylo [data-note]').forEach(el=>el.addEventListener('pointerdown',e=>{ e.pre
 $('#xyloDemo').addEventListener('pointerdown',()=>{
   S.chime();
   bunny.classList.add('bn-dance-move'); bunnyClass('bn-dance',24000);
-  playSong(TUNE_TWINKLE,{bpm:112,type:'sine',vol:.4,
+  playSong(TUNE_TWINKLE,{bpm:112,type:'sine',vol:.75,
     onBeat:n=>{ if(!n) return;
       const el=$(`#xylo .xbar[data-note="${n[0]}5"]`)||$(`#xylo .xkey[data-note="${n}"]`);
       if(el){ el.classList.add('hit'); setTimeout(()=>el.classList.remove('hit'),200); } },
@@ -2031,7 +2022,7 @@ function eatSamosa(d,e){
 }
 inits.chase=()=>{
   samosaCount=0; updateChaseCount();
-  playSong(TUNE_MOTO,{bpm:152,type:'triangle',vol:.18,loop:true});
+  playSong(TUNE_MOTO,{bpm:152,type:'triangle',vol:.6,loop:true});
   spawnSamosa(); samosaTimer=setInterval(spawnSamosa,1500);
 };
 cleanups.chase=()=>{
